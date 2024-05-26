@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:upstyle/screen/dashboard_screen.dart';
-import 'package:upstyle/screen/login_screen.dart';
+import 'package:upstyleapp/screen/dashboard_screen.dart';
+import 'package:upstyleapp/screen/welcome_screen.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -15,7 +15,7 @@ class AuthScreen extends StatelessWidget {
           final User? user = snapshot.data;
           if (user == null) {
             // User not logged in, send them to LoginScreen
-            return LoginScreen();
+            return const WelcomeScreen();
           } else {
             // User is logged in, send them to DashboardScreen
             return const DashboardScreen();

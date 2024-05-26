@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/welcome_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -41,7 +42,12 @@ class DashboardScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () async {
                         await signOut();
-                        Navigator.pushNamed(context, '/login');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WelcomeScreen(),
+                          ),
+                        );
                       },
                       child: const Text('Logout'),
                     ),

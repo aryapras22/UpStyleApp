@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1098215056967",
+    "project_id": "upstyleapp-c0154",
+    "storage_bucket": "upstyleapp-c0154.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098215056967:android:22403c28c9e5a5d744f362",
+        "android_client_info": {
+          "package_name": "com.upstyle.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB-pshj-09Su1u04P0D7K3JjSIv7kL0rY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
