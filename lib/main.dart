@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:upstyle/auth_screen.dart';
+import 'package:upstyle/screen/auth_screen.dart';
 // import 'firebase_options.dart';
 
 Future<void> main() async {

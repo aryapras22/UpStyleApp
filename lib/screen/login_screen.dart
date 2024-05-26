@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:upstyle/dashboard_screen.dart';
-import 'package:upstyle/register_screen.dart';
+import 'package:upstyle/screen/dashboard_screen.dart';
+import 'package:upstyle/screen/register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
