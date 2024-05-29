@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:upstyleapp/screen/auth_screen.dart';
+import 'package:upstyleapp/theme/theme.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -16,9 +19,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: AuthScreen(),
+      theme: lightMode,
     );
   }
 }

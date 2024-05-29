@@ -1,63 +1,81 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/welcome_screen.dart';
+import 'package:upstyleapp/services/auth_services.dart';
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text('Home'),
+    Text('Order'),
+    Text('Chat'),
+    Text('Profile'),
+  ];
+
+  static List<AppBar> _appBarOptions = <AppBar>[
+    AppBar(
+      title: Text('Home'),
+    ),
+    AppBar(
+      title: Text('Order'),
+    ),
+    AppBar(
+      title: Text('Chat'),
+    ),
+    AppBar(
+      title: Text('Profile'),
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  AuthServices _authServices = AuthServices();
 
   @override
   Widget build(BuildContext context) {
-    Future<void> signOut() async {
-      await FirebaseAuth.instance.signOut();
-    }
-
-    Future<String> getUserName() async {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return 'User';
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      return doc.get('name') ?? 'User';
-    }
-
-    return FutureBuilder<String>(
-      future: getUserName(),
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Dashboard'),
-            ),
-            body: Container(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Welcome to the dashboard, ${snapshot.data}!'),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await signOut();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WelcomeScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text('Logout'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-      },
+    return Scaffold(
+      appBar: _appBarOptions.elementAt(_selectedIndex),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/home.png'),
+            label: 'Home',
+            activeIcon: Image.asset('assets/icons/home_active.png'),
+          ),
+          // order
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/order.png'),
+            label: 'Order',
+            activeIcon: Image.asset('assets/icons/order_active.png'),
+          ),
+          // chat
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/chat.png'),
+            label: 'Chat',
+            activeIcon: Image.asset('assets/icons/chat_active.png'),
+          ),
+          // profile
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/icons/profile.png'),
+            label: 'Profile',
+            activeIcon: Image.asset('assets/icons/profile_active.png'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
