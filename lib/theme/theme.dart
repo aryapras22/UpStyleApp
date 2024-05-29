@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,8 +8,10 @@ ThemeData lightMode = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: Color.fromARGB(255, 238, 99, 56),
     secondary: Color.fromARGB(255, 150, 150, 150),
-    surface: Colors.white,
+    surface: Color.fromARGB(255, 246, 246, 246),
     onSurface: Colors.black,
+    tertiary: Color.fromARGB(255, 106, 112, 124),
+    onSecondary: Color.fromARGB(255, 225, 225, 225),
   ),
   textTheme: const TextTheme(
     titleLarge: TextStyle(
@@ -30,6 +34,8 @@ ThemeData lightMode = ThemeData(
     ),
   ),
   inputDecorationTheme: const InputDecorationTheme(
+    fillColor: Colors.white,
+    iconColor: Color.fromARGB(255, 106, 112, 124),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(16)),
       borderSide: BorderSide.none,
@@ -73,5 +79,29 @@ ThemeData lightMode = ThemeData(
     showUnselectedLabels: true,
     type: BottomNavigationBarType.fixed,
     backgroundColor: Colors.white,
+    elevation: 5,
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.all<Color>(
+        const Color.fromARGB(255, 238, 99, 56),
+      ),
+      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+      textStyle: WidgetStateProperty.all<TextStyle>(
+        const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'ProductSansMedium',
+        ),
+      ),
+    ),
   ),
 );

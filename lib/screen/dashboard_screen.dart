@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/home/home.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -12,26 +13,26 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home'),
+    Home(),
     Text('Order'),
     Text('Chat'),
     Text('Profile'),
   ];
 
-  static List<AppBar> _appBarOptions = <AppBar>[
-    AppBar(
-      title: Text('Home'),
-    ),
-    AppBar(
-      title: Text('Order'),
-    ),
-    AppBar(
-      title: Text('Chat'),
-    ),
-    AppBar(
-      title: Text('Profile'),
-    ),
-  ];
+  // static List<AppBar> _appBarOptions = <AppBar>[
+  //   AppBar(
+  //     title: Text('Home'),
+  //   ),
+  //   AppBar(
+  //     title: Text('Order'),
+  //   ),
+  //   AppBar(
+  //     title: Text('Chat'),
+  //   ),
+  //   AppBar(
+  //     title: Text('Profile'),
+  //   ),
+  // ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -44,9 +45,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBarOptions.elementAt(_selectedIndex),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
+        
         items: [
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/home.png'),
@@ -73,8 +74,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
+        elevation: 10,
       ),
     );
   }
