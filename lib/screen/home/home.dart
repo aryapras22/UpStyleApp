@@ -62,7 +62,9 @@ class _HomeState extends State<Home> {
                       if (pickedFile != null) {
                         _image = File(pickedFile.path);
                       } else {
-                        print('No image selected.');
+                        SnackBar(
+                          content: Text('No image selected.'),
+                        );
                       }
                     });
                   },
@@ -130,9 +132,45 @@ class _HomeState extends State<Home> {
                     // upload post
                     _uploadPost(context);
                     Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Post uploaded successfully.'),
-                    ));
+                    // pop up success message with picture
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)),
+                          ),
+                          title: Center(
+                            child: Row(
+                              children: [
+                                Text('Upload successful',
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge),
+                                Spacer(),
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.close),
+                                ),
+                              ],
+                            ),
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset('assets/icons/upload_success.png'),
+                              SizedBox(height: 10),
+                              Text(
+                                'Your image has been uploaded successfully.',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,

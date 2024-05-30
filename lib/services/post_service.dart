@@ -19,12 +19,10 @@ class PostService {
     try {
       final storageRef = _storage.ref();
       final imageRef =
-          storageRef.child('posts').child(uid).child('file/${uuid.v4()}.png');
+          storageRef.child('posts').child(uid).child('${uuid.v4()}.png');
       final imageBytes = await file.readAsBytes();
       await imageRef.putData(imageBytes);
       await imageRef.getDownloadURL().then((value) => url = value);
-
-      print("Image uploaded");
 
       DocumentReference ref = await _firestore.collection('posts').add({
         'text': text,
@@ -39,9 +37,7 @@ class PostService {
         'image_url': url,
         'created_at': FieldValue.serverTimestamp(),
       });
-      print("Post created");
     } catch (e) {
-      print("eror bos");
       rethrow;
     }
   }
@@ -49,7 +45,10 @@ class PostService {
   // read all posts
   Future<List<DocumentSnapshot>> readAllPosts() async {
     try {
-      QuerySnapshot querySnapshot = await _firestore.collection('posts').get();
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('created_at', descending: true)
+          .get();
       return querySnapshot.docs;
     } catch (e) {
       rethrow;
