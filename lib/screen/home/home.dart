@@ -11,7 +11,7 @@ import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
 class Home extends StatefulWidget {
-  Home({super.key});
+  const Home({super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -75,7 +75,8 @@ class _HomeState extends State<Home> {
                       }
                     });
                   },
-                  child: DottedBorder(
+                    child: _image != null
+                        ? DottedBorder(
                     borderType: BorderType.RRect,
                     color: Theme.of(context).colorScheme.primary,
                     dashPattern: [6, 3],
@@ -85,12 +86,7 @@ class _HomeState extends State<Home> {
                       width: 500,
                       height: 300,
                       child: Center(
-                        child: _image != null
-                            ? Ink.image(
-                                image: Image.file(_image!).image,
-                                fit: BoxFit.cover,
-                              )
-                            : Column(
+                                child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -104,7 +100,27 @@ class _HomeState extends State<Home> {
                               ),
                       ),
                     ),
-                  ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
+                            child: SizedBox(
+                              width: 500,
+                              height: 300,
+                              child: Center(
+                                child: Ink.image(
+                                  image: Image.file(_image!).image,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          )
+                          
                 ),
                 SizedBox(height: 10),
                 TextField(

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/home/home.dart';
+import 'package:upstyleapp/screen/profile.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -16,23 +17,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Home(),
     Text('Order'),
     Text('Chat'),
-    Text('Profile'),
+    Profile(),
   ];
-
-  // static List<AppBar> _appBarOptions = <AppBar>[
-  //   AppBar(
-  //     title: Text('Home'),
-  //   ),
-  //   AppBar(
-  //     title: Text('Order'),
-  //   ),
-  //   AppBar(
-  //     title: Text('Chat'),
-  //   ),
-  //   AppBar(
-  //     title: Text('Profile'),
-  //   ),
-  // ];
 
   void _onItemTapped(int index) {
     setState(() {
