@@ -1,85 +1,190 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
 
+import 'dart:io';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class Home extends StatefulWidget {
+  Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final TextEditingController _captionController = TextEditingController();
+
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  bool isLoading = true;
+  final PostService _postService = PostService();
+  List<Post> posts = [];
 
   void _showUploadDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          ),
-          title: Center(
-            child: Text('Upload your clothes',
-                style: Theme.of(context).textTheme.titleLarge),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  // Handle image upload
-                },
-                child: DottedBorder(
-                  borderType: BorderType.RRect,
-                  color: Theme.of(context).colorScheme.primary,
-                  dashPattern: [6, 3],
-                  strokeWidth: 2,
-                  radius: Radius.circular(10),
-                  child: SizedBox(
-                    width: 500,
-                    height: 100,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/icons/upload_active.png'),
-                          Text(
-                            "Upload your image here",
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                        ],
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Center(
+              child: Row(
+                children: [
+                  Text('Upload your clothes',
+                      style: Theme.of(context).textTheme.titleLarge),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    final pickedFile = await _picker.pickImage(
+                        source: ImageSource.gallery, imageQuality: 80);
+                    setState(() {
+                      if (pickedFile != null) {
+                        _image = File(pickedFile.path);
+                      } else {
+                        print('No image selected.');
+                      }
+                    });
+                  },
+                  child: DottedBorder(
+                    borderType: BorderType.RRect,
+                    color: Theme.of(context).colorScheme.primary,
+                    dashPattern: [6, 3],
+                    strokeWidth: 2,
+                    radius: Radius.circular(10),
+                    child: SizedBox(
+                      width: 500,
+                      height: 300,
+                      child: Center(
+                        child: _image != null
+                            ? Ink.image(
+                                image: Image.file(_image!).image,
+                                fit: BoxFit.cover,
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset('assets/icons/upload_active.png'),
+                                  Text(
+                                    "Upload your image here",
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Type an image caption...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                        color: Colors.grey, width: 1, style: BorderStyle.solid),
+                SizedBox(height: 10),
+                TextField(
+                  controller: _captionController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Type an image caption...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                          style: BorderStyle.solid),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle upload
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_image == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Please select an image.'),
+                      ));
+                      return;
+                    }
+                    if (_captionController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Please enter a caption.'),
+                      ));
+                      return;
+                    }
+                    // upload post
+                    _uploadPost(context);
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Post uploaded successfully.'),
+                    ));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Center(
+                      child: Text('Upload',
+                          style: TextStyle(color: Colors.white))),
                 ),
-                child: Center(
-                    child:
-                        Text('Upload', style: TextStyle(color: Colors.white))),
-              ),
-            ],
-          ),
-        );
+              ],
+            ),
+          );
+        });
       },
     );
+  }
+
+  void _uploadPost(context) async {
+    try {
+      await _postService.createPost(_captionController.text, _image!);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void _fetchData() async {
+    var allPost = await _postService.readAllPosts();
+    String name = '';
+    String avatar = '';
+    for (var doc in allPost) {
+      var value = await _postService.getUserData(doc['user_id']);
+      name = value['name'];
+      // avatar = value['image_url'];
+      posts.add(
+        Post(
+          id: doc.id,
+          name: name,
+          userAvatar: 'assets/images/post_avatar.png',
+          postImage: doc['image_url'],
+          caption: doc['text'],
+          time: doc['created_at'].toString(),
+        ),
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    _fetchData();
+    super.initState();
   }
 
   @override
@@ -94,7 +199,6 @@ class Home extends StatelessWidget {
                 Container(
                   height: 330,
                   decoration: BoxDecoration(
-                    // bottom left and right radius
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
@@ -234,15 +338,21 @@ class Home extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  PostCard(),
-                  PostCard(),
-                ],
-              ),
-            ),
+            isLoading
+                ? CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        for (var post in posts)
+                          PostCard(
+                            post: post,
+                          ),
+                      ],
+                    ),
+                  ),
           ],
         ),
       ),
