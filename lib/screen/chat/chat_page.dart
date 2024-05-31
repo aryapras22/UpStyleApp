@@ -7,11 +7,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upstyleapp/screen/order/order_form.dart';
 import 'package:upstyleapp/services/chat_service.dart';
 import 'package:upstyleapp/services/post_service.dart';
-import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;
@@ -44,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
   String latestChat = '';
   String latestChatTime = '';
   Map<String, dynamic> latestChatAndTime = {};
+  String otherUserId = '';
 
   void getUser() async {
     await chatService.getOtherUsername(widget.room.id).then((value) {
@@ -51,6 +51,7 @@ class _ChatPageState extends State<ChatPage> {
         setState(() {
           name = value['name'];
           imgUrl = value['imageUrl'];
+          otherUserId = value.id;
         });
       });
     });
@@ -109,9 +110,10 @@ class _ChatPageState extends State<ChatPage> {
             ),
             actions: [
               IconButton(
-                icon: Icon(Icons.call, color: Colors.black),
+                icon: Icon(Icons.file_copy, color: Colors.black),
                 onPressed: () {
-                  // Add your call button action here
+                  // send an order to user
+                  OrderForm();
                 },
               ),
               IconButton(
