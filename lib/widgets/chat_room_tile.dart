@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:upstyleapp/screen/chat/chat_page.dart';
 
 class ChatRoomTile extends StatelessWidget {
-  const ChatRoomTile({super.key});
+  final types.Room room;
+  ChatRoomTile({super.key, required this.room});
 
   @override
   Widget build(BuildContext context) {
