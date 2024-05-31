@@ -101,22 +101,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('users')
-              .doc(user['uid'])
-              .get(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                !snapshot.data!.exists) {
-              return const Text('Error loading address');
-            }
-            final userData = snapshot.data!.data() as Map<String, dynamic>;
-            return Form(
+        child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,7 +113,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
                   const SizedBox(height: 20),
                   InputEditProfile(
-                    initialValue: userData['name'],
+                initialValue: user['name'],
                     prefixIcon: Icons.person,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -143,12 +128,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   const SizedBox(height: 20),
                   InputEditProfile(
                     prefixIcon: Icons.email,
-                    initialValue: userData['email'],
+                initialValue: user['email'],
                     isReadOnly: true,
                   ),
                   const SizedBox(height: 20),
                   InputEditProfile(
-                    initialValue: userData['phone'] ?? '',
+                initialValue: user['phone'] ?? '',
                     prefixIcon: Icons.phone,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -162,7 +147,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
                   const SizedBox(height: 20),
                   InputEditProfile(
-                    initialValue: userData['address'],
+                initialValue: user['address'],
                     prefixIcon: Icons.location_on,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -184,9 +169,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           child: const Text('Save'),
                         ),
                 ],
-              ),
-            );
-          },
+          ),
         ),
       ),
     );
