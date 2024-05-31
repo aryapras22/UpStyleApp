@@ -1,7 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/customer_login_screen.dart';
-import 'package:upstyleapp/screen/designer_login_screen.dart';
+import 'package:upstyleapp/screen/auth/customer_login_screen.dart';
+import 'package:upstyleapp/screen/auth/designer_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/home/home.dart';
-import 'package:upstyleapp/screen/profile.dart';
+import 'package:upstyleapp/screen/auth/profile_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Home(),
     Text('Order'),
     Text('Chat'),
-    Profile(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -33,7 +33,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
-        
         items: [
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/home.png'),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/register_screen.dart';
+import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
 
 class DesignerLoginScreen extends StatelessWidget {
   const DesignerLoginScreen({super.key});

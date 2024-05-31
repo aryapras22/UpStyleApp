@@ -3,6 +3,7 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/screen/auth_screen.dart';
 import 'package:upstyleapp/theme/theme.dart';
 import 'firebase_options.dart';
@@ -15,7 +16,7 @@ Future<void> main() async {
   await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.debug,
   );
-  runApp(const App());
+  runApp(ProviderScope(child: const App()));
 }
 
 class App extends StatelessWidget {

@@ -15,11 +15,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
 
-  bool _obscureText = true;
+  bool _obscureTextPassword = true;
+  bool _obscureTextConfirmPassword = true;
 
-  void _isObscure() {
+  void _isObscurePassword() {
     setState(() {
-      _obscureText = !_obscureText;
+      _obscureTextPassword = !_obscureTextPassword;
+    });
+  }
+
+  void _isObscureConfirmPassword() {
+    setState(() {
+      _obscureTextConfirmPassword = !_obscureTextConfirmPassword;
     });
   }
 
@@ -33,6 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email: _emailController.text,
         password: _passwordController.text,
         name: _nameController.text,
+        role: 'customer',
       );
       // Navigasi ke halaman lain atau tampilkan pesan sukses
       Navigator.pop(context);
@@ -168,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                   return null;
                 },
-                obscureText: _obscureText,
+                obscureText: _obscureTextPassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
                     Icons.lock_outline,
@@ -176,12 +184,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureText
+                      _obscureTextPassword
                           ? Icons.visibility_off
                           : Icons.visibility_outlined,
                       color: const Color.fromARGB(255, 150, 150, 150),
                     ),
-                    onPressed: _isObscure,
+                    onPressed: _isObscurePassword,
                   ),
                   hintText: 'Password',
                   hintStyle: const TextStyle(
@@ -215,7 +223,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                   return null;
                 },
-                obscureText: _obscureText,
+                obscureText: _obscureTextConfirmPassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
                     Icons.lock_outline,
@@ -223,12 +231,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscureText
+                      _obscureTextConfirmPassword
                           ? Icons.visibility_off
                           : Icons.visibility_outlined,
                       color: const Color.fromARGB(255, 150, 150, 150),
                     ),
-                    onPressed: _isObscure,
+                    onPressed: _isObscureConfirmPassword,
                   ),
                   hintText: 'Confirm Password',
                   hintStyle: const TextStyle(
