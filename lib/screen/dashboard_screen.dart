@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/home/home.dart';
 import 'package:upstyleapp/screen/auth/profile_screen.dart';
-import 'package:upstyleapp/services/auth_services.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -25,8 +24,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _selectedIndex = index;
     });
   }
-
-  AuthServices _authServices = AuthServices();
 
   @override
   Widget build(BuildContext context) {
