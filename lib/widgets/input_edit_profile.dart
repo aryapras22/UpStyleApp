@@ -26,9 +26,10 @@ class InputEditProfile extends StatelessWidget {
       ),
       child: TextFormField(
         initialValue: initialValue,
+        readOnly: isReadOnly,
         decoration: InputDecoration(
           prefixIcon: Container(
-            // margin: EdgeInsets.only(right: 8), // Remove padding and add margin
+            padding: const EdgeInsets.all(16), // Adjust the padding here
             decoration: const BoxDecoration(
               color: Colors.grey,
               borderRadius: BorderRadius.only(
@@ -36,9 +37,15 @@ class InputEditProfile extends StatelessWidget {
                 bottomLeft: Radius.circular(10),
               ),
             ),
-            child: Icon(prefixIcon, color: Colors.white),
+            child: Icon(prefixIcon, color: Colors.white, size: 24),
           ),
-          border: InputBorder.none, // Remove border to fit the design
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 60, // Ensure the minimum width is enough
+            minHeight: 60, // Ensure the minimum height is enough
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+          border: InputBorder.none,
         ),
         validator: validator,
         onSaved: onSaved,

@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/model/user_model.dart';
 
-class AuthServices extends StateNotifier<Map<String, String>> {
-  AuthServices() : super({});
+class AuthServices extends StateNotifier<UserModel?> {
+  AuthServices() : super(null);
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -24,6 +25,14 @@ class AuthServices extends StateNotifier<Map<String, String>> {
         password: password,
       );
       User? user = userCredential.user;
+      UserModel customer = UserModel(
+        name: name,
+        email: email,
+        role: role,
+        phone: phone,
+        address: address,
+        imageUrl: imageUrl,
+      );
 
       if (user != null) {
         // Save additional data to Firestore
@@ -37,15 +46,7 @@ class AuthServices extends StateNotifier<Map<String, String>> {
         });
 
         // Update state
-        state = {
-          'uid': user.uid,
-          'email': email,
-          'name': name,
-          'role': role,
-          'phone': phone ?? '',
-          'address': address ?? '',
-          'imageUrl': imageUrl ?? 'assets',
-        };
+        state = customer;
       }
     } on FirebaseAuthException catch (e) {
       print('Error registering user: ${e.message}');
@@ -74,17 +75,16 @@ class AuthServices extends StateNotifier<Map<String, String>> {
         DocumentSnapshot userDoc =
             await _firestore.collection('users').doc(user.uid).get();
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        UserModel userModel = UserModel(
+            email: email,
+            name: userData['name'],
+            role: userData['role'],
+            phone: userData['phone'],
+            address: userData['address'],
+            imageUrl: userData['imageUrl']);
 
         // Update state
-        state = {
-          'uid': user.uid,
-          'email': user.email!,
-          'name': userData['name'],
-          'role': userData['role'],
-          'phone': userData['phone'],
-          'address': userData['address'],
-          'imageUrl': userData['imageUrl'],
-        };
+        state = userModel;
       }
     } on FirebaseAuthException catch (e) {
       print('Error logging in user: ${e.message}');
@@ -100,7 +100,7 @@ class AuthServices extends StateNotifier<Map<String, String>> {
     try {
       await _firebaseAuth.signOut();
       // Clear state
-      state = {};
+      state = null;
     } catch (e) {
       print('Error logging out: $e');
       rethrow;
@@ -108,8 +108,24 @@ class AuthServices extends StateNotifier<Map<String, String>> {
   }
 
   // Get current user
-  Map<String, String>? getCurrentUser() {
-    return state.isNotEmpty ? state : null;
+  Future<void> setCurrentUser() async {
+    try {
+      User? user = _firebaseAuth.currentUser;
+      if (user != null) {
+        // Get additional data from Firestore
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        UserModel userModel = UserModel.fromJson(userData);
+
+        // Update state
+        state = userModel;
+      }
+    } catch (e) {
+      print('Error getting current user: $e');
+      rethrow;
+    }
   }
 
   // Update profile
@@ -129,13 +145,14 @@ class AuthServices extends StateNotifier<Map<String, String>> {
       });
 
       // Update state
-      state = {
-        ...state,
-        'name': name,
-        'phone': phone,
-        'address': address,
-        if (imageUrl != null) 'imageUrl': imageUrl,
-      };
+      state = UserModel(
+        name: name,
+        email: state!.email,
+        role: state!.role,
+        phone: phone,
+        address: address,
+        imageUrl: imageUrl,
+      );
     } catch (e) {
       print('Error updating profile: $e');
       rethrow;
@@ -144,6 +161,6 @@ class AuthServices extends StateNotifier<Map<String, String>> {
 }
 
 final authServicesProvider =
-    StateNotifierProvider<AuthServices, Map<String, String>>((ref) {
+    StateNotifierProvider<AuthServices, UserModel?>((ref) {
   return AuthServices();
 });

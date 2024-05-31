@@ -1,8 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,73 +101,86 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  ProfileImagePicker(
-                    onSelectImage: (image) {
-                      _selectedImage = image;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  InputEditProfile(
-                initialValue: user['name'],
-                    prefixIcon: Icons.person,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Name cannot be empty!';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      _name = newValue!;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  InputEditProfile(
-                    prefixIcon: Icons.email,
-                initialValue: user['email'],
-                    isReadOnly: true,
-                  ),
-                  const SizedBox(height: 20),
-                  InputEditProfile(
-                initialValue: user['phone'] ?? '',
-                    prefixIcon: Icons.phone,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Phone number cannot be empty!';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      _phone = newValue!;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  InputEditProfile(
-                initialValue: user['address'],
-                    prefixIcon: Icons.location_on,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Address cannot be empty!';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      _address = newValue!;
-                    },
-                  ),
-                  const SizedBox(height: 40),
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () {
-                            _updateProfile(context, authServices, user['uid']!);
-                          },
-                          child: const Text('Save'),
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ProfileImagePicker(
+                onSelectImage: (image) {
+                  _selectedImage = image;
+                },
+              ),
+              const SizedBox(height: 40),
+              InputEditProfile(
+                initialValue: user!.name,
+                prefixIcon: Icons.person,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Name cannot be empty!';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) {
+                  _name = newValue!;
+                },
+              ),
+              const SizedBox(height: 20),
+              InputEditProfile(
+                prefixIcon: Icons.email,
+                initialValue: user.email,
+                isReadOnly: true,
+              ),
+              const SizedBox(height: 20),
+              InputEditProfile(
+                initialValue: user.phone ?? '',
+                prefixIcon: Icons.phone,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Phone number cannot be empty!';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) {
+                  _phone = newValue!;
+                },
+              ),
+              const SizedBox(height: 20),
+              InputEditProfile(
+                initialValue: user.address ?? '',
+                prefixIcon: Icons.location_on,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Address cannot be empty!';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) {
+                  _address = newValue!;
+                },
+              ),
+              const SizedBox(height: 40),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                ],
+                        minimumSize:
+                            Size(double.infinity, 48), // Menambahkan ini
+                      ),
+                      onPressed: () {
+                        _updateProfile(context, authServices,
+                            FirebaseAuth.instance.currentUser!.uid);
+                      },
+                      child: const Text('Save',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'ProductSansMedium',
+                              color: Colors.white)),
+                    ),
+            ],
           ),
         ),
       ),

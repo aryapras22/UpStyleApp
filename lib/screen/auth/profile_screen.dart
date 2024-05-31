@@ -55,8 +55,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: user['imageUrl'] != null
-                            ? NetworkImage(user['imageUrl']!)
+                        image: user!.imageUrl != null
+                            ? NetworkImage(user.imageUrl!)
                             : const AssetImage('assets/images/photo.png'),
                         fit: BoxFit.cover,
                       ),
@@ -67,11 +67,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user['name'] ?? 'Name not set',
+                        user!.name ?? 'User',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
-                        user['email'] ?? 'user@example.com',
+                        user!.email ?? 'user@example.com',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
