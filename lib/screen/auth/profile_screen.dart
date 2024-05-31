@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/auth/edit_profile_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
@@ -5,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/widgets/profile_option.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -34,15 +36,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ]),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
                   Container(
@@ -52,8 +55,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: AssetImage(
-                            'assets/images/photo.png'), // Ganti dengan path gambar profil
+                        image: user['imageUrl'] != null
+                            ? NetworkImage(user['imageUrl']!)
+                            : const AssetImage('assets/images/photo.png'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -63,11 +67,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.displayName ?? 'User Name',
+                        user['name'] ?? 'Name not set',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
-                        user?.email ?? 'user@example.com',
+                        user['email'] ?? 'user@example.com',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),
@@ -77,15 +81,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                10), // Mengatur sudut tumpul
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () {
-                          //mengarahkan ke halaman edit profile
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => EditProfileScreen(),
+                              builder: (context) => const EditProfileScreen(),
                             ),
                           );
                         },

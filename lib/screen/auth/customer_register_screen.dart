@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
-class RegisterScreen extends StatefulWidget {
+class CustomerRegisterScreen extends StatefulWidget {
+  const CustomerRegisterScreen({super.key});
+
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<CustomerRegisterScreen> createState() => _CustomerRegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   final AuthServices _authServices = AuthServices();
   final _formKey = GlobalKey<FormState>();
 

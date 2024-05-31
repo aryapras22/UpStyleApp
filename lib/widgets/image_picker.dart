@@ -32,9 +32,9 @@ class _ProfileImagePickerState extends ConsumerState<ProfileImagePicker> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authServicesProvider);
-    final imageUrl = user?.photoURL;
+    final imageUrl = user['imageUrl'];
 
-    var content = imageUrl != null
+    var content = imageUrl != null && imageUrl.isNotEmpty
         ? Image.network(
             imageUrl,
             height: 130,
@@ -68,8 +68,11 @@ class _ProfileImagePickerState extends ConsumerState<ProfileImagePicker> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: AssetImage(
-                      'assets/images/photo.png'), // Ganti dengan path gambar profil
+                  image: _selectedImage != null
+                      ? FileImage(_selectedImage!)
+                      : imageUrl != null && imageUrl.isNotEmpty
+                          ? NetworkImage(imageUrl) as ImageProvider
+                          : const AssetImage('assets/images/photo.png'),
                   fit: BoxFit.cover,
                 ),
               ),

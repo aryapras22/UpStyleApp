@@ -2,13 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AuthServices extends StateNotifier<User?> {
-  AuthServices() : super(null);
+class AuthServices extends StateNotifier<Map<String, String>> {
+  AuthServices() : super({});
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Register user
-  Future<User?> register({
+  Future<void> register({
     required String email,
     required String password,
     required String name,
@@ -35,13 +35,20 @@ class AuthServices extends StateNotifier<User?> {
           'address': address ?? '',
           'imageUrl': imageUrl ?? 'assets',
         });
-        _firebaseAuth.currentUser?.updateDisplayName(name);
-        _firebaseAuth.currentUser?.updatePhotoURL(imageUrl);
+        await user.updateDisplayName(name);
+        await user.updatePhotoURL(imageUrl);
 
-        state = user; // Update state
+        // Update state
+        state = {
+          'uid': user.uid,
+          'email': email,
+          'name': name,
+          'role': role,
+          'phone': phone ?? '',
+          'address': address ?? '',
+          'imageUrl': imageUrl ?? 'assets',
+        };
       }
-
-      return user;
     } on FirebaseAuthException catch (e) {
       print('Error registering user: ${e.message}');
       rethrow;
@@ -52,7 +59,7 @@ class AuthServices extends StateNotifier<User?> {
   }
 
   // Login user
-  Future<User?> login({
+  Future<void> login({
     required String email,
     required String password,
   }) async {
@@ -62,8 +69,25 @@ class AuthServices extends StateNotifier<User?> {
         email: email,
         password: password,
       );
-      state = userCredential.user; // Update state
-      return userCredential.user;
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // Get additional data from Firestore
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        // Update state
+        state = {
+          'uid': user.uid,
+          'email': user.email!,
+          'name': userData['name'],
+          'role': userData['role'],
+          'phone': userData['phone'],
+          'address': userData['address'],
+          'imageUrl': userData['imageUrl'],
+        };
+      }
     } on FirebaseAuthException catch (e) {
       print('Error logging in user: ${e.message}');
       rethrow;
@@ -77,7 +101,8 @@ class AuthServices extends StateNotifier<User?> {
   Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
-      state = null; // Update state
+      // Clear state
+      state = {};
     } catch (e) {
       print('Error logging out: $e');
       rethrow;
@@ -85,8 +110,8 @@ class AuthServices extends StateNotifier<User?> {
   }
 
   // Get current user
-  User? getCurrentUser() {
-    return state;
+  Map<String, String>? getCurrentUser() {
+    return state.isNotEmpty ? state : null;
   }
 
   // Update profile
@@ -104,6 +129,15 @@ class AuthServices extends StateNotifier<User?> {
         'address': address,
         if (imageUrl != null) 'imageUrl': imageUrl,
       });
+
+      // Update state
+      state = {
+        ...state,
+        'name': name,
+        'phone': phone,
+        'address': address,
+        if (imageUrl != null) 'imageUrl': imageUrl,
+      };
     } catch (e) {
       print('Error updating profile: $e');
       rethrow;
@@ -111,6 +145,7 @@ class AuthServices extends StateNotifier<User?> {
   }
 }
 
-final authServicesProvider = StateNotifierProvider<AuthServices, User?>((ref) {
+final authServicesProvider =
+    StateNotifierProvider<AuthServices, Map<String, String>>((ref) {
   return AuthServices();
 });

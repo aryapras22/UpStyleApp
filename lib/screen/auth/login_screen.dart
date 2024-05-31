@@ -1,17 +1,19 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
-import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
+import 'package:upstyleapp/screen/register_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
-class CustomerLoginScreen extends StatefulWidget {
-  const CustomerLoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<CustomerLoginScreen> createState() => _CustomerLoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
 
@@ -38,11 +40,12 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
     }
 
     try {
-      User? user = await _authServices.login(
+      await _authServices.login(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
+      User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         Navigator.pushReplacement(
           context,

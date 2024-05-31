@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/login_screen.dart';
-import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
+import 'package:upstyleapp/screen/auth/login_screen.dart';
+import 'package:upstyleapp/screen/register_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -121,7 +121,7 @@ class WelcomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RegisterScreen(),
+                            builder: (context) => const RegisterScreen(),
                           ),
                         );
                       },
