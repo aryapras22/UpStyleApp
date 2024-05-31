@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/services/auth_services.dart';
+import 'package:upstyleapp/screen/dashboard_screen.dart';
 
 class DesignerRegisterScreen extends StatefulWidget {
   const DesignerRegisterScreen({super.key});
@@ -45,7 +46,12 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
         role: 'designer',
       );
       // Navigasi ke halaman lain atau tampilkan pesan sukses
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
