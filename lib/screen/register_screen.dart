@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/auth/customer_login_screen.dart';
-import 'package:upstyleapp/screen/auth/designer_login_screen.dart';
+import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
+import 'package:upstyleapp/screen/auth/designer_register_screen.dart';
+import 'package:upstyleapp/screen/auth/login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   String selectedRole = 'Customer';
   Color selectedColor = const Color.fromARGB(255, 238, 99, 56);
 
@@ -142,14 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CustomerLoginScreen(),
+                      builder: (context) => const CustomerRegisterScreen(),
                     ),
                   );
                 } else if (selectedRole == 'Designer') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DesignerLoginScreen(),
+                      builder: (context) => const DesignerRegisterScreen(),
                     ),
                   );
                 }

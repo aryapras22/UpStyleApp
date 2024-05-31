@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:upstyleapp/widgets/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:upstyleapp/widgets/input_edit_profile.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
@@ -27,7 +26,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   bool _isLoading = false;
 
   Future<void> _updateProfile(
-      BuildContext context, AuthServices authServices, User user) async {
+      BuildContext context, AuthServices authServices, String uid) async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
@@ -43,13 +42,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('user_images')
-            .child("${user.uid}.jpg");
+            .child("$uid.jpg");
         await storageRef.putFile(_selectedImage!);
         imageUrl = await storageRef.getDownloadURL();
       }
 
       await authServices.updateProfile(
-        uid: user.uid,
+        uid: uid,
         name: _name,
         phone: _phone,
         address: _address,
@@ -105,7 +104,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         child: FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
               .collection('users')
-              .doc(user?.uid)
+              .doc(user['uid'])
               .get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -144,12 +143,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   const SizedBox(height: 20),
                   InputEditProfile(
                     prefixIcon: Icons.email,
-                    initialValue: user?.email,
+                    initialValue: userData['email'],
                     isReadOnly: true,
                   ),
                   const SizedBox(height: 20),
                   InputEditProfile(
-                    initialValue: user?.phoneNumber,
+                    initialValue: userData['phone'] ?? '',
                     prefixIcon: Icons.phone,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -161,20 +160,26 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       _phone = newValue!;
                     },
                   ),
+                  const SizedBox(height: 20),
                   InputEditProfile(
                     initialValue: userData['address'],
                     prefixIcon: Icons.location_on,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Address cannot be empty!';
+                      }
+                      return null;
+                    },
                     onSaved: (newValue) {
                       _address = newValue!;
                     },
                   ),
-                  const SizedBox(height: 20),
                   const SizedBox(height: 40),
                   _isLoading
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
                           onPressed: () {
-                            _updateProfile(context, authServices, user!);
+                            _updateProfile(context, authServices, user['uid']!);
                           },
                           child: const Text('Save'),
                         ),
