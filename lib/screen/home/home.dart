@@ -30,6 +30,7 @@ class _HomeState extends State<Home> {
       RefreshController(initialRefresh: false);
 
   void _onRefresh() async {
+    posts.clear();
     await _fetchData();
     _refreshController.refreshCompleted();
   }
@@ -47,7 +48,7 @@ class _HomeState extends State<Home> {
               child: Row(
                 children: [
                   Text('Upload your clothes',
-                      style: Theme.of(context).textTheme.titleLarge),
+                      style: Theme.of(context).textTheme.titleLarge!),
                   Spacer(),
                   IconButton(
                     onPressed: () {
@@ -75,7 +76,7 @@ class _HomeState extends State<Home> {
                       }
                     });
                   },
-                    child: _image != null
+                    child: _image == null
                         ? DottedBorder(
                     borderType: BorderType.RRect,
                     color: Theme.of(context).colorScheme.primary,
@@ -173,6 +174,9 @@ class _HomeState extends State<Home> {
                                 Spacer(),
                                 IconButton(
                                   onPressed: () {
+                                    //clear the image and caption
+                                    _image = null;
+                                    _captionController.clear();
                                     Navigator.of(context).pop();
                                   },
                                   icon: Icon(Icons.close),
@@ -228,7 +232,7 @@ class _HomeState extends State<Home> {
       var value = await _postService.getUserData(doc['user_id']);
       name = value['name'];
       // avatar = value['image_url'];
-      posts.add(
+      posts.add( 
         Post(
           id: doc.id,
           name: name,
@@ -236,6 +240,7 @@ class _HomeState extends State<Home> {
           postImage: doc['image_url'],
           caption: doc['text'],
           time: doc['created_at'].toString(),
+          userId: doc['user_id'],
         ),
       );
     }

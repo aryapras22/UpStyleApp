@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/chat/rooms_page.dart';
 import 'package:upstyleapp/screen/home/home.dart';
 import 'package:upstyleapp/screen/auth/profile_screen.dart';
 
@@ -15,8 +16,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     Home(),
     Text('Order'),
-    Text('Chat'),
+    RoomsPage(),
     ProfileScreen(),
+
   ];
 
   void _onItemTapped(int index) {

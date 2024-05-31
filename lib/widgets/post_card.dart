@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/screen/home/profile_detail.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -27,14 +28,31 @@ class PostCard extends StatelessWidget {
             SizedBox(height: 10),
             Row(
               children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage(post.userAvatar),
-                  // replace with your avatar URL
-                ),
-                SizedBox(width: 10),
-                Text(
-                  post.name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                GestureDetector(
+                  onTap: () {
+                    // replace with your profile screen
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ProfileDetail(userId: post.userId),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage(post.userAvatar),
+                        // replace with your avatar URL
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        post.name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
                 Spacer(),
                 Icon(Icons.favorite_border),
