@@ -1,21 +1,68 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
+import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upstyleapp/services/chat_service.dart';
+import 'package:upstyleapp/services/post_service.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final types.Room room;
+  ChatPage({super.key, required this.room});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final List<types.Message> _messages = [];
-  final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
+  List<types.Message> _messages = [];
+  var _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+
+  final ChatService chatService = ChatService();
+
+  // ger current user
+  final User? user = FirebaseAuth.instance.currentUser;
+  types.PartialImage imageMessage = types.PartialImage(
+    name: 'image',
+    uri: 'image',
+    size: 0,
+  );
+  types.User? otherUser;
+
+  PostService postService = PostService();
+  String name = '';
+  String imgUrl = '';
+  String latestChat = '';
+  String latestChatTime = '';
+  Map<String, dynamic> latestChatAndTime = {};
+
+  void getUser() async {
+    await chatService.getOtherUsername(widget.room.id).then((value) {
+      postService.getUserData(value).then((value) {
+        setState(() {
+          name = value['name'];
+          imgUrl = value['imageUrl'];
+        });
+      });
+    });
+  }
+
+  // _user = types.User(id: user!.uid, firstName: user!.displayName!);
+  @override
+  void initState() {
+    _user = types.User(id: user!.uid, firstName: user!.displayName!);
+    getUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -32,15 +79,16 @@ class _ChatPageState extends State<ChatPage> {
             title: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'https://example.com/profile.jpg'), // Replace with your image URL
+                  backgroundImage: imgUrl == ''
+                      ? AssetImage('assets/images/post_avatar.png')
+                      : NetworkImage(imgUrl), // Replace with your image URL
                 ),
                 SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dante Pratama',
+                      name == '' ? 'User' : name,
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -74,100 +122,181 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ],
           ),
-          body: Chat(
-            theme: DefaultChatTheme(
-                inputBackgroundColor: Colors.white,
-                inputTextColor: Colors.black,
-                primaryColor: Theme.of(context).colorScheme.primary,
-                secondaryColor: Theme.of(context).colorScheme.secondary,
-                sendButtonIcon: Icon(Icons.send,
-                    color: Theme.of(context).colorScheme.primary),
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                attachmentButtonIcon: Image.asset('assets/icons/document.png'),
-                inputPadding: EdgeInsets.all(4),
-                inputMargin: EdgeInsets.only(top: 2, right: 4, left: 4),
-                inputBorderRadius: BorderRadius.zero,
-                inputTextDecoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Type a message',
-                  hintStyle: TextStyle(
-                    fontFamily:
-                        Theme.of(context).textTheme.bodySmall!.fontFamily,
-                    color: Colors.grey,
-                  ),
-                ),
-                inputTextStyle: TextStyle(
-                    fontFamily:
-                        Theme.of(context).textTheme.bodySmall!.fontFamily,
-                    fontSize: 16,
-                    color: Colors.black)),
-            messages: _messages,
-            onSendPressed: _handleSendPressed,
-            user: _user,
-            onAttachmentPressed: _handleImageSelection,
-          ),
+          body: StreamBuilder<List<types.Message>>(
+              stream: chatService.getMessages(widget.room),
+              initialData: [],
+              builder: (context, snapshot) {
+                _messages = snapshot.data ?? [];
+                return Chat(
+                  theme: DefaultChatTheme(
+                      inputBackgroundColor: Colors.white,
+                      inputTextColor: Colors.black,
+                      primaryColor: Theme.of(context).colorScheme.primary,
+                      secondaryColor: Theme.of(context).colorScheme.secondary,
+                      sendButtonIcon: Icon(Icons.send,
+                          color: Theme.of(context).colorScheme.primary),
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      attachmentButtonIcon:
+                          Image.asset('assets/icons/document.png'),
+                      inputPadding: EdgeInsets.all(4),
+                      inputMargin: EdgeInsets.only(top: 2, right: 4, left: 4),
+                      inputBorderRadius: BorderRadius.zero,
+                      inputTextDecoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Type a message',
+                        hintStyle: TextStyle(
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall!.fontFamily,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      inputTextStyle: TextStyle(
+                          fontFamily:
+                              Theme.of(context).textTheme.bodySmall!.fontFamily,
+                          fontSize: 16,
+                          color: Colors.black)),
+                  messages: _messages,
+                  onSendPressed: _handleSendPressed,
+                  user: _user,
+                  onAttachmentPressed: _handleImageSelection,
+                );
+              }),
         ),
       );
-
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
-    });
-  }
-
-  // Widget _buildImageMessage(types.ImageMessage message,
-  //     {required int messageWidth}) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       border: Border.all(
-  //         color: Colors.red, // Set your desired border color here
-  //         width: 2.0, // Set your desired border width here
-  //       ),
-  //       borderRadius:
-  //           BorderRadius.circular(10.0), // Set your desired border radius here
-  //     ),
-  //     child: Image.network(
-  //       message.uri,
-  //       width: message.width,
-  //       height: message.height,
-  //       fit: BoxFit.cover,
-  //     ),
-  //   );
-  // }
-
-  void _handleSendPressed(types.PartialText message) {
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: const Uuid().v4(),
-      text: message.text,
-    );
-
-    _addMessage(textMessage);
+  void _handleSendPressed(message) {
+    chatService.sendMessage(message, widget.room);
   }
 
   void _handleImageSelection() async {
-    final result = await ImagePicker().pickImage(
-      imageQuality: 70,
-      maxWidth: 1440,
-      source: ImageSource.gallery,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            ),
+            title: Center(
+              child: Row(
+                children: [
+                  Text('Upload your image ',
+                      style: Theme.of(context).textTheme.titleLarge!),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                    onTap: () async {
+                      final pickedFile = await _picker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 70,
+                        maxWidth: 1440,
+                      );
+
+                      if (pickedFile != null) {
+                        final bytes = await pickedFile.readAsBytes();
+                        final image = await decodeImageFromList(bytes);
+
+                        imageMessage = types.PartialImage(
+                          name: pickedFile.name,
+                          uri: pickedFile.path,
+                          size: bytes.length,
+                        );
+                      }
+                      setState(() {
+                        if (pickedFile != null) {
+                          _image = File(pickedFile.path);
+                        } else {
+                          SnackBar(
+                            content: Text('No image selected.'),
+                          );
+                        }
+                      });
+                    },
+                    child: _image == null
+                        ? DottedBorder(
+                            borderType: BorderType.RRect,
+                            color: Theme.of(context).colorScheme.primary,
+                            dashPattern: [6, 3],
+                            strokeWidth: 2,
+                            radius: Radius.circular(10),
+                            child: SizedBox(
+                              width: 500,
+                              height: 300,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                        'assets/icons/upload_active.png'),
+                                    Text(
+                                      "Upload your image here",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
+                            child: SizedBox(
+                              width: 500,
+                              height: 300,
+                              child: Center(
+                                child: Ink.image(
+                                  image: Image.file(_image!).image,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          )),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_image == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Please select an image.'),
+                      ));
+                      return;
+                    }
+
+                    chatService.sendImage(imageMessage, widget.room);
+                    // clear
+                    _image = null;
+                    Navigator.of(context).pop();
+                    // pop up success message with picture
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: Center(
+                      child: Text('Upload',
+                          style: TextStyle(color: Colors.white))),
+                ),
+              ],
+            ),
+          );
+        });
+      },
     );
-    if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
-
-      final message = types.ImageMessage(
-        author: _user,
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        height: image.height.toDouble(),
-        id: const Uuid().v4.toString(),
-        name: result.name,
-        size: bytes.length,
-        uri: result.path,
-        width: image.width.toDouble(),
-      );
-
-      _addMessage(message);
-    }
   }
 }

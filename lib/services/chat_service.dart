@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -17,10 +18,16 @@ class ChatService {
 
   var uuid = const Uuid();
 
-
   // create a chat
-  void createChat(types.User otherUser, BuildContext context) async {
+  Future<types.Room> createChat(
+      types.User otherUser, BuildContext context) async {
     final room = await FirebaseChatCore.instance.createRoom(otherUser);
+    _firestore.collection('chatRooms').doc(room.id).set({
+      'user': _auth.currentUser!.uid,
+      'designer': otherUser.id,
+      'chatRoomId': room.id,
+    });
+    return room;
   }
 
   // get user rooms
@@ -42,62 +49,58 @@ class ChatService {
   }
 
   // send message
-  void sendMessage(types.Room room, types.PartialText message) {
+  void sendMessage(message, types.Room room) async {
     try {
-      FirebaseChatCore.instance.sendMessage(room, message.text);
+      FirebaseChatCore.instance.sendMessage(message, room.id);
     } on Exception catch (e) {
       throw e;
     }
   }
 
   // upload image
-  Future<void> sendImage(File file, types.Room room) async {
-    String url = '';
-    try {
-      final storageRef = _storage.ref();
-      final imageRef = storageRef
-          .child('chatrooms')
-          .child(room.id)
-          .child('${uuid.v4()}.png');
-      final imageBytes = await file.readAsBytes();
-      await imageRef.putData(imageBytes);
-      await imageRef.getDownloadURL().then((value) => url = value);
-    } on Exception catch (e) {
-      throw e;
-    }
+  Future<void> sendImage(message, types.Room room) async {
+    print("uploading image");
+    FirebaseChatCore.instance.sendMessage(message, room.id);
   }
 
-  // get chat room id
-  // String getChatRoomId(String uidUser, String uidDesigner) {
-  //   if (uidUser.compareTo(uidDesigner) == 1) {
-  //     return '$uidUser-$uidDesigner';
-  //   } else {
-  //     return '$uidDesigner-$uidUser';
-  //   }
-  // }
+  // get otherUsername from chatRooms collection with input of chatroom id
+  Future<String> getOtherUsername(String chatRoomId) async {
+    String otherUsername = '';
+    await _firestore
+        .collection('chatRooms')
+        .doc(chatRoomId)
+        .get()
+        .then((value) {
+      if (value.data() != null) {
+        if (value.data()!['user'] == _auth.currentUser!.uid) {
+          otherUsername = value.data()!['designer'];
+        } else {
+          otherUsername = value.data()!['user'];
+        }
+      }
+    });
+    return otherUsername;
+  }
 
-  // // make a chat room id chat between two users using id of two uses
-  // void createChatRoom(String uidUser, String uidDesigner) {
-  //   String chatRoomId = getChatRoomId(uidUser, uidDesigner);
-  //   Map<String, dynamic> chatRoom = {
-  //     'user': uidUser,
-  //     'designer': uidDesigner,
-  //     'chatRoomId': chatRoomId,
-  //   };
-  //   _firestore.collection('chatRooms').doc(chatRoomId).set(chatRoom);
-  // }
 
-  // // send message to chat room
-  // void sendMessage(String chatRoomId, String message) {
-  //   Map<String, dynamic> messageMap = {
-  //     'message': message,
-  //     'sendBy': _auth.currentUser!.uid,
-  //     'time': DateTime.now().millisecondsSinceEpoch,
-  //   };
-  //   _firestore
-  //       .collection('chatRooms')
-  //       .doc(chatRoomId)
-  //       .collection('chats')
-  //       .add(messageMap);
-  // }
+  // get latest chat and time
+  Future<Map<String, dynamic>> getLatestChat(String chatRoomId) async {
+    Map<String, dynamic> latestChatAndTime = {};
+    await _firestore
+        .collection('chatRooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        latestChatAndTime = {
+          'latestChat': value.docs[0].data()['text'],
+          'latestChatTime': value.docs[0].data()['timestamp'],
+        };
+      }
+    });
+    return latestChatAndTime;
+  }
 }

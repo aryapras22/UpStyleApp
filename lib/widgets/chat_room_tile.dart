@@ -3,13 +3,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:upstyleapp/screen/chat/chat_page.dart';
+import 'package:upstyleapp/services/chat_service.dart';
+import 'package:upstyleapp/services/post_service.dart';
 
-class ChatRoomTile extends StatelessWidget {
+class ChatRoomTile extends StatefulWidget {
   final types.Room room;
   ChatRoomTile({super.key, required this.room});
 
   @override
+  State<ChatRoomTile> createState() => _ChatRoomTileState();
+}
+
+class _ChatRoomTileState extends State<ChatRoomTile> {
+  ChatService chatService = ChatService();
+  PostService postService = PostService();
+
+  String name = '';
+  String imgUrl = '';
+  String latestChat = '';
+  String latestChatTime = '';
+  Map<String, dynamic> latestChatAndTime = {};
+  final AssetImage defaultImage = AssetImage('assets/images/post_avatar.png');
+
+  void getUser() async {
+    await chatService.getOtherUsername(widget.room.id).then((value) {
+      postService.getUserData(value).then((value) {
+        setState(() {
+          name = value['name'];
+          imgUrl = value['imageUrl'];
+        });
+      });
+    });
+    await chatService.getLatestChat(widget.room.id).then(
+          (value) => latestChatAndTime = value,
+        );
+    setState(() {
+      latestChat = latestChatAndTime['message'];
+      DateTime time = latestChatAndTime['timestamp'].toDate();
+      latestChatTime = '${time.hour}:${time.minute}';
+    });
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    
     return Container(
       margin: EdgeInsets.only(left: 30, top: 10, right: 30),
       decoration: BoxDecoration(
@@ -26,14 +69,14 @@ class ChatRoomTile extends StatelessWidget {
         title: Row(
           children: [
             Text(
-              'Dante Pratama',
+              name == '' ? 'Username' : name,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             Spacer(),
             Text(
-              '10:00',
+              latestChatTime == '' ? 'Time' : latestChatTime,
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: Theme.of(context)
                         .colorScheme
@@ -46,7 +89,7 @@ class ChatRoomTile extends StatelessWidget {
         ),
         subtitle: Row(
           children: [
-            Text('done sir',
+            Text(latestChat == '' ? 'Latest chat' : latestChat,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       fontWeight: FontWeight.w400,
                     )),
@@ -55,7 +98,7 @@ class ChatRoomTile extends StatelessWidget {
               radius: 10,
               backgroundColor: Theme.of(context).colorScheme.primary,
               child: Text(
-                '2',
+                '',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -66,14 +109,16 @@ class ChatRoomTile extends StatelessWidget {
         ),
         leading: CircleAvatar(
           radius: 25,
-          backgroundImage: AssetImage('assets/images/post_avatar.png'),
+          backgroundImage: imgUrl == '' ? defaultImage : NetworkImage(imgUrl),
         ),
         onTap: () {
           // open chat
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChatPage(),
+              builder: (context) => ChatPage(
+                room: widget.room,
+              ),
             ),
           );
         },

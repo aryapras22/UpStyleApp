@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Home(),
     Text('Order'),
     RoomsPage(),
-    Profile(),
+    ProfileScreen(),
 
   ];
 
