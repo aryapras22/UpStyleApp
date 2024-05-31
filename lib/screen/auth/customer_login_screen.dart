@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
-import 'package:upstyleapp/screen/register_screen.dart';
+import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class CustomerLoginScreen extends StatefulWidget {
@@ -12,15 +12,23 @@ class CustomerLoginScreen extends StatefulWidget {
 }
 
 class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
-  bool _obscureText = true;
+  bool _obscureTextPassword = true;
+  bool _obscureTextConfirmPassword = true;
+
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final AuthServices _authServices = AuthServices();
 
-  void _isObscure() {
+  void _isObscurePassword() {
     setState(() {
-      _obscureText = !_obscureText;
+      _obscureTextPassword = !_obscureTextPassword;
+    });
+  }
+
+  void _isObscureConfirmPassword() {
+    setState(() {
+      _obscureTextConfirmPassword = !_obscureTextConfirmPassword;
     });
   }
 
@@ -142,7 +150,7 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         }
                         return null;
                       },
-                      obscureText: _obscureText,
+                      obscureText: _obscureTextPassword,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(
                           Icons.lock_outline,
@@ -150,12 +158,12 @@ class _CustomerLoginScreenState extends State<CustomerLoginScreen> {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
+                            _obscureTextPassword
                                 ? Icons.visibility_off
                                 : Icons.visibility_outlined,
                             color: const Color.fromARGB(255, 150, 150, 150),
                           ),
-                          onPressed: _isObscure,
+                          onPressed: _isObscurePassword,
                         ),
                         hintText: 'Password',
                         hintStyle: const TextStyle(

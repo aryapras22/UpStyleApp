@@ -43,9 +43,13 @@ dependencies:
   uuid: ^4.4.0
   firebase_app_check: ^0.2.2+7
   pull_to_refresh_flutter3: ^2.0.2
+
   flutter_chat_ui: ^1.6.13
   flutter_chat_types: ^3.6.2
   flutter_firebase_chat_core: ^1.6.7
+
+  flutter_riverpod:
+
 
 dev_dependencies:
   flutter_test:

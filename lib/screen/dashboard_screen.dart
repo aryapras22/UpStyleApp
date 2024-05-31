@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/chat/rooms_page.dart';
 import 'package:upstyleapp/screen/home/home.dart';
-import 'package:upstyleapp/screen/profile.dart';
+import 'package:upstyleapp/screen/auth/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,6 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Text('Order'),
     RoomsPage(),
     Profile(),
+
   ];
 
   void _onItemTapped(int index) {
@@ -26,14 +27,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
-        
         items: [
           BottomNavigationBarItem(
             icon: Image.asset('assets/icons/home.png'),

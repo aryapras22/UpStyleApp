@@ -14,7 +14,9 @@ class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+
   var uuid = const Uuid();
+
 
   // create a chat
   void createChat(types.User otherUser, BuildContext context) async {
