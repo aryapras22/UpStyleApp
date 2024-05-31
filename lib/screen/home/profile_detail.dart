@@ -131,6 +131,8 @@ class _ProfileDetailState extends State<ProfileDetail> {
                           Text('Norway'),
                         ],
                       ),
+                      if (FirebaseAuth.instance.currentUser!.uid !=
+                          widget.userId)
                       ElevatedButton(
                         onPressed: () {
                           createChat();

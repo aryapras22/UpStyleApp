@@ -15,6 +15,7 @@ class RoomsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(child: Text('Chats')),
+        automaticallyImplyLeading: false,
       ),
       body: StreamBuilder(
         stream: ChatService().getRooms(),
