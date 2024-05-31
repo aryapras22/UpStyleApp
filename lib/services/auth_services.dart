@@ -33,10 +33,8 @@ class AuthServices extends StateNotifier<Map<String, String>> {
           'role': role,
           'phone': phone ?? '',
           'address': address ?? '',
-          'imageUrl': imageUrl ?? 'assets',
+          'imageUrl': imageUrl ?? 'assets/images/photo.png',
         });
-        await user.updateDisplayName(name);
-        await user.updatePhotoURL(imageUrl);
 
         // Update state
         state = {

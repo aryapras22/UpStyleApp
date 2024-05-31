@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/dashboard_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
@@ -44,8 +45,14 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         name: _nameController.text,
         role: 'customer',
       );
-      // Navigasi ke halaman lain atau tampilkan pesan sukses
-      Navigator.pop(context);
+      // Navigasi ke halaman dashboard
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),

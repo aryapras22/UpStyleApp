@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/auth/customer_register_screen.dart';
 import 'package:upstyleapp/screen/auth/designer_register_screen.dart';
-import 'package:upstyleapp/screen/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
