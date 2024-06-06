@@ -63,44 +63,46 @@ class _HomeState extends State<Home> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
-                  onTap: () async {
-                    final pickedFile = await _picker.pickImage(
-                        source: ImageSource.gallery, imageQuality: 80);
-                    setState(() {
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                      } else {
-                        SnackBar(
-                          content: Text('No image selected.'),
-                        );
-                      }
-                    });
-                  },
+                    onTap: () async {
+                      final pickedFile = await _picker.pickImage(
+                          source: ImageSource.gallery, imageQuality: 80);
+                      setState(() {
+                        if (pickedFile != null) {
+                          _image = File(pickedFile.path);
+                        } else {
+                          SnackBar(
+                            content: Text('No image selected.'),
+                          );
+                        }
+                      });
+                    },
                     child: _image == null
                         ? DottedBorder(
-                    borderType: BorderType.RRect,
-                    color: Theme.of(context).colorScheme.primary,
-                    dashPattern: [6, 3],
-                    strokeWidth: 2,
-                    radius: Radius.circular(10),
-                    child: SizedBox(
-                      width: 500,
-                      height: 300,
-                      child: Center(
+                            borderType: BorderType.RRect,
+                            color: Theme.of(context).colorScheme.primary,
+                            dashPattern: [6, 3],
+                            strokeWidth: 2,
+                            radius: Radius.circular(10),
+                            child: SizedBox(
+                              width: 500,
+                              height: 300,
+                              child: Center(
                                 child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset('assets/icons/upload_active.png'),
-                                  Text(
-                                    "Upload your image here",
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
-                                ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                        'assets/icons/upload_active.png'),
+                                    Text(
+                                      "Upload your image here",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                  ],
+                                ),
                               ),
-                      ),
-                    ),
+                            ),
                           )
                         : Container(
                             decoration: BoxDecoration(
@@ -120,9 +122,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
-                          )
-                          
-                ),
+                          )),
                 SizedBox(height: 10),
                 TextField(
                   controller: _captionController,
@@ -232,7 +232,7 @@ class _HomeState extends State<Home> {
       var value = await _postService.getUserData(doc['user_id']);
       name = value['name'];
       // avatar = value['image_url'];
-      posts.add( 
+      posts.add(
         Post(
           id: doc.id,
           name: name,
@@ -257,200 +257,195 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SmartRefresher(
-        enablePullDown: true,
-        enablePullUp: false,
-        header: WaterDropHeader(),
-        footer: CustomFooter(
-          builder: (BuildContext context, LoadStatus? mode) {
-            Widget body;
-            if (mode == LoadStatus.idle) {
-              body = Text("pull up load");
-            } else if (mode == LoadStatus.loading) {
-              body = CupertinoActivityIndicator();
-            } else if (mode == LoadStatus.failed) {
-              body = Text("Load Failed!Click retry!");
-            } else if (mode == LoadStatus.canLoading) {
-              body = Text("release to load more");
-            } else {
-              body = Text("No more Data");
-            }
-            return Container(
-              height: 55.0,
-              child: Center(child: body),
-            );
-          },
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    height: 330,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                      image: DecorationImage(
-                          image: Image.asset(
-                            'assets/images/home_cover.png',
-                          ).image,
-                          fit: BoxFit.fill),
+    return SmartRefresher(
+      enablePullDown: true,
+      enablePullUp: false,
+      header: WaterDropHeader(),
+      footer: CustomFooter(
+        builder: (BuildContext context, LoadStatus? mode) {
+          Widget body;
+          if (mode == LoadStatus.idle) {
+            body = Text("pull up load");
+          } else if (mode == LoadStatus.loading) {
+            body = CupertinoActivityIndicator();
+          } else if (mode == LoadStatus.failed) {
+            body = Text("Load Failed!Click retry!");
+          } else if (mode == LoadStatus.canLoading) {
+            body = Text("release to load more");
+          } else {
+            body = Text("No more Data");
+          }
+          return Container(
+            height: 55.0,
+            child: Center(child: body),
+          );
+        },
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: 330,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
                     ),
+                    image: DecorationImage(
+                        image: Image.asset(
+                          'assets/images/home_cover.png',
+                        ).image,
+                        fit: BoxFit.fill),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 150, left: 20, right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Lorem Ipsum',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 150, left: 20, right: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Lorem Ipsum',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                          child: Center(
-                            child: Text(
-                              'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                        child: Center(
+                          child: Text(
+                            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            _showUploadDialog(context);
-                          },
-                          icon: Image.asset('assets/icons/upload.png'),
-                          label: Text('Upload your clothes',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
-                                // use theme data font
-                              )),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          _showUploadDialog(context);
+                        },
+                        icon: Image.asset('assets/icons/upload.png'),
+                        label: Text('Upload your clothes',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                              // use theme data font
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        focusColor: Colors.white,
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Lorem Ipsum is simply',
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Theme.of(context).colorScheme.tertiary,
+                          size: 25,
                         ),
-                      ],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.filter_list,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          focusColor: Colors.white,
-                          fillColor: Colors.white,
-                          filled: true,
-                          hintText: 'Lorem Ipsum is simply',
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Theme.of(context).colorScheme.tertiary,
-                            size: 25,
+            ),
+            // recommended for you row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Recommended for you',
+                      style: Theme.of(context).textTheme.titleLarge),
+                  // icon next
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.black,
+                    size: 16,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Chip(
+                    label: Text('Trend'),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    labelStyle: TextStyle(color: Colors.white),
+                    // remove outline
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  Chip(
+                    label: Text('Nearby'),
+                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                  Chip(label: Text('Nearby')),
+                  Chip(label: Text('Nearby')),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            isLoading
+                ? CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        for (var post in posts)
+                          PostCard(
+                            post: post,
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
+                      ],
                     ),
-                    SizedBox(width: 10),
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.filter_list,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // recommended for you row
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Recommended for you',
-                        style: Theme.of(context).textTheme.titleLarge),
-                    // icon next
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.black,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Chip(
-                      label: Text('Trend'),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      labelStyle: TextStyle(color: Colors.white),
-                      // remove outline
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    Chip(
-                      label: Text('Nearby'),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.onSecondary,
-                    ),
-                    Chip(label: Text('Nearby')),
-                    Chip(label: Text('Nearby')),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              isLoading
-                  ? CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Column(
-                        children: [
-                          for (var post in posts)
-                            PostCard(
-                              post: post,
-                            ),
-                        ],
-                      ),
-                    ),
-            ],
-          ),
+                  ),
+          ],
         ),
       ),
     );
