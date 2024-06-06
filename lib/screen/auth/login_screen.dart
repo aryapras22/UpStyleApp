@@ -275,6 +275,50 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
+
+                    //Sign in with google
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          await _authServices.signInWithGoogle();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DashboardScreen(),
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: $e')),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        side: const BorderSide(
+                          color: Color.fromARGB(255, 238, 99, 56),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/images/google.png'),
+                          const SizedBox(width: 16),
+                          const Text(
+                            'Sign in with Google',
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 238, 99, 56),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
