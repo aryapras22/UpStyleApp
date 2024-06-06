@@ -260,7 +260,10 @@ class _HomeState extends State<Home> {
     return SmartRefresher(
       enablePullDown: true,
       enablePullUp: false,
-      header: WaterDropHeader(),
+      header: WaterDropHeader(
+        complete: SizedBox(),
+        waterDropColor: Theme.of(context).colorScheme.primary,
+      ),
       footer: CustomFooter(
         builder: (BuildContext context, LoadStatus? mode) {
           Widget body;
