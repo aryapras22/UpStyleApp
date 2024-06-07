@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:upstyleapp/model/user_model.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthServices extends StateNotifier<UserModel?> {
-  AuthServices() : super(null);
+class AuthServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -25,14 +23,6 @@ class AuthServices extends StateNotifier<UserModel?> {
         password: password,
       );
       User? user = userCredential.user;
-      UserModel customer = UserModel(
-        name: name,
-        email: email,
-        role: role,
-        phone: phone,
-        address: address,
-        imageUrl: imageUrl,
-      );
 
       if (user != null) {
         // Save additional data to Firestore
@@ -42,11 +32,8 @@ class AuthServices extends StateNotifier<UserModel?> {
           'role': role,
           'phone': phone ?? '',
           'address': address ?? '',
-          'imageUrl': imageUrl ?? 'assets/images/photo.png',
+          'imageUrl': imageUrl ?? '',
         });
-
-        // Update state
-        state = customer;
       }
     } on FirebaseAuthException catch (e) {
       print('Error registering user: ${e.message}');
@@ -63,29 +50,10 @@ class AuthServices extends StateNotifier<UserModel?> {
     required String password,
   }) async {
     try {
-      UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      User? user = userCredential.user;
-
-      if (user != null) {
-        // Get additional data from Firestore
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        UserModel userModel = UserModel(
-            email: email,
-            name: userData['name'],
-            role: userData['role'],
-            phone: userData['phone'],
-            address: userData['address'],
-            imageUrl: userData['imageUrl']);
-
-        // Update state
-        state = userModel;
-      }
     } on FirebaseAuthException catch (e) {
       print('Error logging in user: ${e.message}');
       rethrow;
@@ -99,37 +67,15 @@ class AuthServices extends StateNotifier<UserModel?> {
   Future<void> logout() async {
     try {
       await _firebaseAuth.signOut();
-      // Clear state
-      state = null;
+      await GoogleSignIn().signOut();
     } catch (e) {
       print('Error logging out: $e');
       rethrow;
     }
   }
 
-  // Get current user
-  Future<void> setCurrentUser() async {
-    try {
-      User? user = _firebaseAuth.currentUser;
-      if (user != null) {
-        // Get additional data from Firestore
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-
-        UserModel userModel = UserModel.fromJson(userData);
-
-        // Update state
-        state = userModel;
-      }
-    } catch (e) {
-      print('Error getting current user: $e');
-      rethrow;
-    }
-  }
-
-  // Update profile
-  Future<void> updateProfile({
+  // Update user profile
+  Future<void> updateUserProfile({
     required String uid,
     required String name,
     required String phone,
@@ -141,26 +87,30 @@ class AuthServices extends StateNotifier<UserModel?> {
         'name': name,
         'phone': phone,
         'address': address,
-        if (imageUrl != null) 'imageUrl': imageUrl,
+        'imageUrl': imageUrl ?? '',
       });
-
-      // Update state
-      state = UserModel(
-        name: name,
-        email: state!.email,
-        role: state!.role,
-        phone: phone,
-        address: address,
-        imageUrl: imageUrl,
-      );
     } catch (e) {
-      print('Error updating profile: $e');
+      print('Error updating user profile: $e');
       rethrow;
     }
   }
-}
 
-final authServicesProvider =
-    StateNotifierProvider<AuthServices, UserModel?>((ref) {
-  return AuthServices();
-});
+  //Google Sign In
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the Google Sign In process
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the GoogleSignInAuthentication object
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+
+    // Create a new credential
+    final googleCredential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Sign in to Firebase with the Google Auth credential
+    return await FirebaseAuth.instance.signInWithCredential(googleCredential);
+  }
+}

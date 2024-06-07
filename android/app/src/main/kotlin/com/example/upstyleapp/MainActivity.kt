@@ -1,4 +1,4 @@
-package com.example.upstyle
+package com.example.upstyleapp
 
 import io.flutter.embedding.android.FlutterActivity
 

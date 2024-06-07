@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:upstyleapp/services/auth_services.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 
 class ProfileImagePicker extends ConsumerStatefulWidget {
   const ProfileImagePicker({super.key, required this.onSelectImage});
@@ -31,7 +31,7 @@ class _ProfileImagePickerState extends ConsumerState<ProfileImagePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authServicesProvider);
+    final user = ref.watch(userProfileProvider);
     final imageUrl = user!.imageUrl;
 
     var content = imageUrl != null && imageUrl.isNotEmpty

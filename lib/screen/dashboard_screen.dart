@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/chat/rooms_page.dart';
 import 'package:upstyleapp/screen/home/home.dart';
 import 'package:upstyleapp/screen/auth/profile_screen.dart';
+import 'package:upstyleapp/screen/orders/order_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -13,12 +14,11 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     Home(),
-    Text('Order'),
+    OrderScreen(),
     RoomsPage(),
     ProfileScreen(),
-
   ];
 
   void _onItemTapped(int index) {
@@ -30,6 +30,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
         items: [

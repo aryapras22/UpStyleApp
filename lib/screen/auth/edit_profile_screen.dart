@@ -1,11 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:upstyleapp/widgets/image_picker.dart';
 import 'package:upstyleapp/widgets/input_edit_profile.dart';
@@ -31,13 +30,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (!isValid) return;
 
     _formKey.currentState?.save();
+    final userData = ref.watch(userProfileProvider);
+    String? imageUrl;
 
     try {
       setState(() {
         _isLoading = true;
       });
 
-      String? imageUrl;
       if (_selectedImage != null) {
         final storageRef = FirebaseStorage.instance
             .ref()
@@ -45,9 +45,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             .child("$uid.jpg");
         await storageRef.putFile(_selectedImage!);
         imageUrl = await storageRef.getDownloadURL();
+      } else {
+        imageUrl = userData.imageUrl;
       }
 
-      await authServices.updateProfile(
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        ref.read(userProfileProvider.notifier).setUser(
+              name: _name,
+              email: currentUser.email ?? '',
+              phone: _phone,
+              imageUrl: imageUrl,
+              role: ref.read(userProfileProvider).role, // Use existing role
+            );
+      }
+      await authServices.updateUserProfile(
         uid: uid,
         name: _name,
         phone: _phone,
@@ -65,6 +77,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
         );
       }
+
+      Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -85,9 +99,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authServices = ref.read(authServicesProvider.notifier);
-    final user = ref.watch(authServicesProvider);
-
+    final authServices = AuthServices();
+    final user = ref.watch(userProfileProvider);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -113,7 +126,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: 40),
               InputEditProfile(
-                initialValue: user!.name,
+                initialValue: user.name,
                 prefixIcon: Icons.person,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -168,8 +181,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        minimumSize:
-                            Size(double.infinity, 48), // Menambahkan ini
+                        minimumSize: const Size(double.infinity, 48),
                       ),
                       onPressed: () {
                         _updateProfile(context, authServices,

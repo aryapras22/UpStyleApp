@@ -34,4 +34,22 @@ class UserModel {
         'address': address,
         'imageUrl': imageUrl,
       };
+
+  UserModel copyWith({
+    String? name,
+    String? email,
+    String? role,
+    String? phone,
+    String? address,
+    String? imageUrl,
+  }) {
+    return UserModel(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      phone: phone ?? this.phone,
+      address: address ?? this.address,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
 }

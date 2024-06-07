@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/auth/edit_profile_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,8 +17,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final authServices = ref.read(authServicesProvider.notifier);
-    final user = ref.watch(authServicesProvider);
+    final authServices = AuthServices();
+    final user = ref.watch(userProfileProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,7 +56,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: user!.imageUrl != null
+                        image: user.imageUrl != ''
                             ? NetworkImage(user.imageUrl!)
                             : const AssetImage('assets/images/photo.png'),
                         fit: BoxFit.cover,
@@ -67,11 +68,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user!.name ?? 'User',
+                        user.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       Text(
-                        user!.email ?? 'user@example.com',
+                        user.email,
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 8),

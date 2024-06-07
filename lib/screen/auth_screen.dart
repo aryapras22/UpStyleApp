@@ -1,10 +1,11 @@
+// auth_screen.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
 import 'package:upstyleapp/screen/welcome_screen.dart';
-import 'package:upstyleapp/services/auth_services.dart';
 
 class AuthScreen extends ConsumerWidget {
   AuthScreen({super.key});
@@ -22,21 +23,31 @@ class AuthScreen extends ConsumerWidget {
             // User not logged in, send them to LoginScreen
             return const WelcomeScreen();
           } else {
+            // User is logged in, get user data from Firestore and update state
             final userCredential = snapshot.data;
             FirebaseFirestore.instance
                 .collection('users')
                 .doc(userCredential!.uid)
                 .get()
                 .then((userData) {
-              var userData =
-                  ref.read(authServicesProvider.notifier).setCurrentUser();
+              if (userData.exists) {
+                final data = userData.data()!;
+                ref.watch(userProfileProvider.notifier).setUser(
+                      name: data['name'],
+                      email: data['email'],
+                      role: data['role'],
+                      phone: data['phone'],
+                      address: data['address'],
+                      imageUrl: data['imageUrl'],
+                    );
+              }
             });
             // User is logged in, send them to DashboardScreen
             return const DashboardScreen();
           }
         }
         // While connection state is not active, show loading spinner
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
