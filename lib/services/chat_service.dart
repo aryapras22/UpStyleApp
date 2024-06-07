@@ -59,8 +59,15 @@ class ChatService {
 
   // upload image
   Future<void> sendImage(message, types.Room room) async {
-    print("uploading image");
+    
     FirebaseChatCore.instance.sendMessage(message, room.id);
+    // update image uri in firestore
+    _firestore
+        .collection('rooms')
+        .doc(room.id)
+        .collection('messages')
+        .doc(message.id)
+        .update({'imageUri': message.imageUri});
   }
 
   // get otherUsername from chatRooms collection with input of chatroom id

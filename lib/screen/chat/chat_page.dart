@@ -208,10 +208,12 @@ class _ChatPageState extends State<ChatPage> {
                         final bytes = await pickedFile.readAsBytes();
                         final image = await decodeImageFromList(bytes);
 
+                        
+
                         imageMessage = types.PartialImage(
                           name: pickedFile.name,
-                          uri: pickedFile.path,
                           size: bytes.length,
+                          uri: pickedFile.path,
                         );
                       }
                       setState(() {
