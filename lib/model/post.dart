@@ -14,5 +14,6 @@ class Post {
       required this.postImage,
       required this.caption,
       required this.time,
-      required this.userId});
+    required this.userId,
+  });
 }

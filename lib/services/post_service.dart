@@ -11,10 +11,12 @@ class PostService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   var uuid = const Uuid();
 
-  Future<void> createPost(String text, File file) async {
+  Future<void> createPost(String text, File file, String userRole) async {
     String uid = _auth.currentUser!.uid;
     String url = '';
     // String postId = uuid.v4();
+    // get user role
+
 
     try {
       final storageRef = _storage.ref();
@@ -29,6 +31,7 @@ class PostService {
         'image_url': url,
         'user_id': uid,
         'created_at': FieldValue.serverTimestamp(),
+        'user_role': userRole,
       });
 
       await _firestore.collection('users').doc(uid).collection('posts').add({
@@ -36,20 +39,40 @@ class PostService {
         'text': text,
         'image_url': url,
         'created_at': FieldValue.serverTimestamp(),
+        
       });
     } catch (e) {
       rethrow;
     }
   }
 
+  // get user role
+  Future<String> getUserRole() async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .get();
+      return documentSnapshot['role'];
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // read all posts
-  Future<List<DocumentSnapshot>> readAllPosts() async {
+  Future<List<DocumentSnapshot>> readAllPosts(userRole) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('posts')
           .orderBy('created_at', descending: true)
+          .where('user_role', isNotEqualTo: userRole)
+          
           .get();
-      return querySnapshot.docs;
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs;
+      } else {
+        return [];
+      }
     } catch (e) {
       rethrow;
     }

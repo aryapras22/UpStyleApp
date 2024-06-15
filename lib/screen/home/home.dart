@@ -216,27 +216,35 @@ class _HomeState extends State<Home> {
 
   void _uploadPost(context) async {
     try {
-      await _postService.createPost(_captionController.text, _image!);
+      await _postService.createPost(_captionController.text, _image!, userRole);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('An error occurred. Please try again.'),
       ));
     }
   }
+  String userRole = 'customer';
 
   Future<void> _fetchData() async {
-    var allPost = await _postService.readAllPosts();
+    var allPost = await _postService.readAllPosts(userRole);
+    if (allPost.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
     String name = '';
     String avatar = '';
+    
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
       name = value['name'];
-      // avatar = value['image_url'];
+      avatar = value['imageUrl'];
       posts.add(
         Post(
           id: doc.id,
           name: name,
-          userAvatar: 'assets/images/post_avatar.png',
+          userAvatar: avatar ?? 'assets/images/post_avatar.png',
           postImage: doc['image_url'],
           caption: doc['text'],
           time: doc['created_at'].toString(),
@@ -251,6 +259,11 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    _postService.getUserRole().then((value) {
+      setState(() {
+        userRole = value;
+      });
+    });
     _fetchData();
     super.initState();
   }
@@ -260,10 +273,7 @@ class _HomeState extends State<Home> {
     return SmartRefresher(
       enablePullDown: true,
       enablePullUp: false,
-      header: WaterDropHeader(
-        complete: SizedBox(),
-        waterDropColor: Theme.of(context).colorScheme.primary,
-      ),
+      physics: BouncingScrollPhysics(),
       footer: CustomFooter(
         builder: (BuildContext context, LoadStatus? mode) {
           Widget body;
@@ -278,7 +288,7 @@ class _HomeState extends State<Home> {
           } else {
             body = Text("No more Data");
           }
-          return Container(
+          return SizedBox(
             height: 55.0,
             child: Center(child: body),
           );

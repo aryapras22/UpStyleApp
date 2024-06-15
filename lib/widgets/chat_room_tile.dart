@@ -17,7 +17,6 @@ class ChatRoomTile extends StatefulWidget {
 class _ChatRoomTileState extends State<ChatRoomTile> {
   ChatService chatService = ChatService();
   PostService postService = PostService();
-
   String name = '';
   String imgUrl = '';
   String latestChat = '';
@@ -26,22 +25,30 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
   final AssetImage defaultImage = AssetImage('assets/images/post_avatar.png');
 
   void getUser() async {
-    await chatService.getOtherUsername(widget.room.id).then((value) {
-      postService.getUserData(value).then((value) {
+    if (widget.room.users[0].id == await chatService.getCurrentUser()) {
+      postService.getUserData(widget.room.users[1].id).then((value) {
         setState(() {
           name = value['name'];
           imgUrl = value['imageUrl'];
         });
       });
-    });
-    await chatService.getLatestChat(widget.room.id).then(
-          (value) => latestChatAndTime = value,
-        );
-    setState(() {
-      latestChat = latestChatAndTime['message'];
-      DateTime time = latestChatAndTime['timestamp'].toDate();
-      latestChatTime = '${time.hour}:${time.minute}';
-    });
+    } else {
+      postService.getUserData(widget.room.users[0].id).then((value) {
+        setState(() {
+          name = value['name'];
+          imgUrl = value['imageUrl'];
+        });
+      });
+    }
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(widget.room.updatedAt!);
+    await chatService.getLatestChat(widget.room).then(
+      (value) {
+        setState(() {
+          latestChat = value;
+          latestChatTime = '${time.hour}:${time.minute}';
+        });
+      },
+    );
   }
 
   @override
@@ -52,7 +59,6 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Container(
       margin: EdgeInsets.only(left: 30, top: 10, right: 30),
       decoration: BoxDecoration(
@@ -89,22 +95,22 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
         ),
         subtitle: Row(
           children: [
-            Text(latestChat == '' ? 'Latest chat' : latestChat,
+            Text(latestChat == '' ? '' : latestChat,
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       fontWeight: FontWeight.w400,
                     )),
             Spacer(),
-            CircleAvatar(
-              radius: 10,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Text(
-                '',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-              ),
-            ),
+            // CircleAvatar(
+            //   radius: 10,
+            //   backgroundColor: Theme.of(context).colorScheme.primary,
+            //   child: Text(
+            //     '',
+            //     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.w500,
+            //         ),
+            //   ),
+            // ),
           ],
         ),
         leading: CircleAvatar(
