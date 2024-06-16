@@ -161,10 +161,10 @@ class _ChatPageState extends State<ChatPage> {
               initialData: [],
               builder: (context, snapshot) {
                 _messages = snapshot.data ?? [];
-                if (snapshot.data![0].metadata != null) {
-                  types.CustomMessage customMessage =
-                      snapshot.data![0] as types.CustomMessage;
-                }
+                // if (snapshot.data![0].metadata != null) {
+                //   types.CustomMessage customMessage =
+                //       snapshot.data![0] as types.CustomMessage;
+                // }
 
                 return Chat(
                   theme: DefaultChatTheme(
