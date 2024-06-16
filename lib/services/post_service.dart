@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:upstyleapp/model/post.dart';
-import 'package:upstyleapp/model/post.dart';
 import 'package:uuid/uuid.dart';
 
 class PostService {
@@ -91,8 +90,8 @@ class PostService {
         default:
           return await readAllPosts();
       }
-    } on Exception catch (e) {
-      throw e;
+    } on Exception {
+      rethrow;
     }
   }
 

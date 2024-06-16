@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:upstyleapp/model/order.dart';
 
 class OrderCard extends StatelessWidget {
-  OrderCard({required this.order, super.key});
-  OrderModel order;
+  final OrderModel order;
+
+  const OrderCard({required this.order, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,8 @@ class OrderCard extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: order.statusColor, width: 1.0),
                   borderRadius: BorderRadius.circular(8.0),
@@ -59,7 +61,7 @@ class OrderCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,

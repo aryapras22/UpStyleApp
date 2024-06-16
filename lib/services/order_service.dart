@@ -20,7 +20,7 @@ class OrderService {
           .child('order_images')
           .child("$orderId.jpg");
       await storageRef.putFile(File(order.imageUrl));
-      final _imageUrl = await storageRef.getDownloadURL();
+      final imageUrl = await storageRef.getDownloadURL();
       await FirebaseFirestore.instance.collection('orders').doc(orderId).set(
         {
           'custId': order.customerId,
@@ -28,7 +28,7 @@ class OrderService {
           'title': order.title,
           'price': order.price,
           'orderDetail': order.orderDetail,
-          'image_url': _imageUrl,
+          'image_url': imageUrl,
           'date': order.date.toString(),
           'status': order.status.name,
           'paymentMethod': ""

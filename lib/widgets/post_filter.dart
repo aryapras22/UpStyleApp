@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class PostFilter extends StatelessWidget {
-  bool state;
+  final bool state;
   final String label;
   final ValueChanged<bool> onChanged;
 
-  PostFilter({
+  const PostFilter({
     super.key,
     required this.label,
     required this.state,

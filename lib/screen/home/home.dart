@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/scheduler/ticker.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:upstyleapp/model/post.dart';
@@ -12,16 +12,14 @@ import 'package:upstyleapp/screen/home/recommended_screen.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  _HomeState createState() => _HomeState();
+  State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<StatefulWidget>
-    implements TickerProviderStateMixin {
+class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
   final TextEditingController _captionController = TextEditingController();
   @override
   Ticker createTicker(TickerCallback onTick) {
@@ -53,6 +51,7 @@ class _HomeState extends State<StatefulWidget>
     _filterController.dispose();
     super.dispose();
   }
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
   bool isLoading = true;
@@ -60,7 +59,7 @@ class _HomeState extends State<StatefulWidget>
   List<Post> posts = [];
   List<Post> searchPosts = [];
   List<String> filters = ['All', 'Trends', 'Designers', 'Users'];
-  late TabController _filterController;  
+  late TabController _filterController;
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   final SearchController _searchController = SearchController();
@@ -81,7 +80,6 @@ class _HomeState extends State<StatefulWidget>
       await _fetchData();
     }
   }
-
 
   void _onRefresh() async {
     posts.clear();
@@ -190,8 +188,8 @@ class _HomeState extends State<StatefulWidget>
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 1,
+                        color: Colors.grey,
+                        width: 1,
                         style: BorderStyle.solid,
                       ),
                     ),

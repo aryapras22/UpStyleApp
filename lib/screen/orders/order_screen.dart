@@ -4,9 +4,10 @@ import 'package:upstyleapp/screen/orders/order_card.dart';
 import 'package:upstyleapp/screen/orders/order_tab_item.dart';
 
 class OrderScreen extends StatefulWidget {
-  OrderScreen({super.key});
+  const OrderScreen({super.key});
+
   @override
-  _OrderScreenState createState() => _OrderScreenState();
+  State<OrderScreen> createState() => _OrderScreenState();
 }
 
 class _OrderScreenState extends State<OrderScreen> {
@@ -29,7 +30,7 @@ class _OrderScreenState extends State<OrderScreen> {
       title: 'Business Card Design',
       orderDetail: 'Professional business card design.',
       status: OrderStatus.inProgress,
-      date: DateTime.now().subtract(Duration(days: 2)),
+      date: DateTime.now().subtract(const Duration(days: 2)),
     ),
     OrderModel(
       designerId: 'designer003',
@@ -39,7 +40,7 @@ class _OrderScreenState extends State<OrderScreen> {
       title: 'Website Banner Design',
       orderDetail: 'Banner design for website homepage.',
       status: OrderStatus.completed,
-      date: DateTime.now().subtract(Duration(days: 7)),
+      date: DateTime.now().subtract(const Duration(days: 7)),
     ),
     OrderModel(
       designerId: 'designer004',
@@ -49,7 +50,7 @@ class _OrderScreenState extends State<OrderScreen> {
       title: 'Full Branding Package',
       orderDetail: 'Complete branding package for new company.',
       status: OrderStatus.canceled,
-      date: DateTime.now().subtract(Duration(days: 10)),
+      date: DateTime.now().subtract(const Duration(days: 10)),
     ),
   ];
 

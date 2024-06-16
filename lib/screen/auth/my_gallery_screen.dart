@@ -7,7 +7,7 @@ class MyGalleryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final PostService _postService = PostService();
+    final PostService postService = PostService();
 
     return Scaffold(
       appBar: AppBar(
@@ -88,7 +88,7 @@ class MyGalleryScreen extends StatelessWidget {
               ),
             ),
             FutureBuilder(
-              future: _postService.getUserPosts(),
+              future: postService.getUserPosts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(

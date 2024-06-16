@@ -7,7 +7,7 @@ import 'package:upstyleapp/screen/home/profile_detail.dart';
 class PostCard extends StatelessWidget {
   final Post post;
 
-  PostCard({required this.post});
+  const PostCard({required this.post});
 
   @override
   Widget build(BuildContext context) {

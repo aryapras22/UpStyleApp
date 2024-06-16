@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upstyleapp/model/order.dart';
 import 'package:upstyleapp/services/order_service.dart';
@@ -12,8 +10,9 @@ import 'package:upstyleapp/services/order_service.dart';
 final _currentUser = FirebaseAuth.instance.currentUser!;
 
 class OrderForm extends StatefulWidget {
-  OrderForm({super.key, required this.custId});
-  String custId;
+  final String custId;
+
+  const OrderForm({super.key, required this.custId});
 
   @override
   State<OrderForm> createState() => _OrderFormState();
@@ -23,9 +22,9 @@ class _OrderFormState extends State<OrderForm> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _namaPesanan = TextEditingController();
-  TextEditingController _harga = TextEditingController();
-  TextEditingController _deskripsi = TextEditingController();
+  final TextEditingController _namaPesanan = TextEditingController();
+  final TextEditingController _harga = TextEditingController();
+  final TextEditingController _deskripsi = TextEditingController();
 
   final OrderService _orderService = OrderService();
 
@@ -92,7 +91,7 @@ class _OrderFormState extends State<OrderForm> {
                     .bodyMedium!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.edit_square,
                     color: Color.fromARGB(255, 150, 150, 150),
                   ),
@@ -104,12 +103,12 @@ class _OrderFormState extends State<OrderForm> {
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -132,7 +131,7 @@ class _OrderFormState extends State<OrderForm> {
                     .bodyMedium!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.monetization_on,
                     color: Color.fromARGB(255, 150, 150, 150),
                   ),
@@ -146,12 +145,12 @@ class _OrderFormState extends State<OrderForm> {
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -174,7 +173,7 @@ class _OrderFormState extends State<OrderForm> {
                     .bodyMedium!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 decoration: InputDecoration(
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.edit_document,
                     color: Color.fromARGB(255, 150, 150, 150),
                   ),
@@ -186,12 +185,12 @@ class _OrderFormState extends State<OrderForm> {
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                         color: Theme.of(context).colorScheme.secondary),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
                     borderSide: BorderSide(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -209,7 +208,7 @@ class _OrderFormState extends State<OrderForm> {
                     if (pickedImage != null) {
                       _image = File(pickedImage.path);
                     } else {
-                      SnackBar(
+                      const SnackBar(
                         content: Text('No image selected.'),
                       );
                     }
@@ -219,9 +218,9 @@ class _OrderFormState extends State<OrderForm> {
                     ? DottedBorder(
                         borderType: BorderType.RRect,
                         color: Theme.of(context).colorScheme.primary,
-                        dashPattern: [6, 3],
+                        dashPattern: const [6, 3],
                         strokeWidth: 2,
-                        radius: Radius.circular(10),
+                        radius: const Radius.circular(10),
                         child: SizedBox(
                           width: 500,
                           height: 200,

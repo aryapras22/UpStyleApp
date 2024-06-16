@@ -45,13 +45,13 @@ class OrderModel {
   Color get statusColor {
     switch (status) {
       case OrderStatus.waiting:
-        return Color.fromARGB(255, 250, 225, 0);
+        return const Color.fromARGB(255, 250, 225, 0);
       case OrderStatus.inProgress:
-        return Color.fromARGB(255, 0, 153, 255);
+        return const Color.fromARGB(255, 0, 153, 255);
       case OrderStatus.completed:
-        return Color.fromARGB(255, 41, 204, 106);
+        return const Color.fromARGB(255, 41, 204, 106);
       case OrderStatus.canceled:
-        return Color.fromARGB(255, 244, 58, 34);
+        return const Color.fromARGB(255, 244, 58, 34);
       default:
         return Colors.black;
     }
