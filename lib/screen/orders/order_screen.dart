@@ -28,7 +28,9 @@ class OrderScreen extends StatelessWidget {
                     height: 40,
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
                     child: TabBar(

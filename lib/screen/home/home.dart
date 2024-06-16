@@ -4,34 +4,91 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:upstyleapp/model/post.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<StatefulWidget>
+    implements TickerProviderStateMixin {
   final TextEditingController _captionController = TextEditingController();
+  @override
+  Ticker createTicker(TickerCallback onTick) {
+    return Ticker(onTick);
+  }
 
+  @override
+  void initState() {
+    _postService.getUserRole().then((value) {
+      setState(() {
+        userRole = value;
+      });
+    });
+    _filterController = TabController(length: filters.length, vsync: this);
+    // _filterController.addListener(() {
+    //   setState(() {
+    //     int index = _filterController.index;
+    //     posts.clear();
+    //     _fetchData();
+    //   });
+    // });
+    _fetchData();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _captionController.dispose();
+    _filterController.dispose();
+    super.dispose();
+  }
   File? _image;
   final ImagePicker _picker = ImagePicker();
   bool isLoading = true;
   final PostService _postService = PostService();
   List<Post> posts = [];
-
+  List<Post> searchPosts = [];
+  List<String> filters = ['All', 'Trends', 'Designers', 'Users'];
+  late TabController _filterController;  
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  final SearchController _searchController = SearchController();
+
+  void search(query) async {
+    if (query.isNotEmpty) {
+      searchPosts = posts
+          .where((post) =>
+              post.caption.toLowerCase().contains(query.toLowerCase()) ||
+              post.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+      setState(() {
+        posts = searchPosts;
+      });
+      return;
+    } else {
+      posts.clear();
+      await _fetchData();
+    }
+  }
+
 
   void _onRefresh() async {
     posts.clear();
-    await _fetchData();
+    try {
+      await _fetchData();
+    } catch (e) {
+      _refreshController.refreshFailed();
+    }
     _refreshController.refreshCompleted();
   }
 
@@ -134,7 +191,8 @@ class _HomeState extends State<Home> {
                       borderSide: BorderSide(
                           color: Colors.grey,
                           width: 1,
-                          style: BorderStyle.solid),
+                        style: BorderStyle.solid,
+                      ),
                     ),
                   ),
                 ),
@@ -223,10 +281,15 @@ class _HomeState extends State<Home> {
       ));
     }
   }
+
   String userRole = 'customer';
 
   Future<void> _fetchData() async {
-    var allPost = await _postService.readAllPosts(userRole);
+    setState(() {
+      posts.clear();
+    });
+    var allPost =
+        await _postService.filteredPost(filters[_filterController.index]);
     if (allPost.isEmpty) {
       setState(() {
         isLoading = false;
@@ -235,7 +298,7 @@ class _HomeState extends State<Home> {
     }
     String name = '';
     String avatar = '';
-    
+
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
       name = value['name'];
@@ -244,7 +307,7 @@ class _HomeState extends State<Home> {
         Post(
           id: doc.id,
           name: name,
-          userAvatar: avatar ?? 'assets/images/post_avatar.png',
+          userAvatar: avatar,
           postImage: doc['image_url'],
           caption: doc['text'],
           time: doc['created_at'].toString(),
@@ -255,17 +318,6 @@ class _HomeState extends State<Home> {
     setState(() {
       isLoading = false;
     });
-  }
-
-  @override
-  void initState() {
-    _postService.getUserRole().then((value) {
-      setState(() {
-        userRole = value;
-      });
-    });
-    _fetchData();
-    super.initState();
   }
 
   @override
@@ -368,11 +420,15 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        search(value);
+                      },
                       decoration: InputDecoration(
                         focusColor: Colors.white,
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'Lorem Ipsum is simply',
+                        hintText: 'Search your styles...',
                         prefixIcon: Icon(
                           Icons.search,
                           color: Theme.of(context).colorScheme.tertiary,
@@ -401,14 +457,15 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            // recommended for you row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Recommended for you',
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Recommended for you',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   // icon next
                   Icon(
                     Icons.arrow_forward_ios,
@@ -419,27 +476,52 @@ class _HomeState extends State<Home> {
               ),
             ),
             SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Chip(
-                    label: Text('Trend'),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    labelStyle: TextStyle(color: Colors.white),
-                    // remove outline
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+            DefaultTabController(
+              length: filters.length,
+              child: PreferredSize(
+                preferredSize: const Size.fromHeight(40),
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      color: Theme.of(context).colorScheme.surface,
                     ),
-                  ),
-                  Chip(
-                    label: Text('Nearby'),
-                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
-                  ),
-                  Chip(label: Text('Nearby')),
-                  Chip(label: Text('Nearby')),
-                ],
+                    child: TabBar(
+                      onTap: (index) async {
+                        setState(() {
+                          isLoading = true;
+                          posts.clear();
+                        });
+                        await _fetchData();
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      controller: _filterController,
+                      tabAlignment: TabAlignment.start,
+                      isScrollable: true,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      indicator: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        border: Border.all(
+                          color: Colors.transparent,
+                        ),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      labelColor: Theme.of(context).colorScheme.surface,
+                      unselectedLabelColor:
+                          Theme.of(context).colorScheme.tertiary,
+                      tabs: [
+                        for (var filter in filters)
+                          Text(
+                            filter,
+                          )
+                      ],
+                    )),
               ),
             ),
             SizedBox(height: 20),
