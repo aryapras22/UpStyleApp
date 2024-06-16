@@ -8,6 +8,7 @@ import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/screen/home/recommended_screen.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
@@ -374,7 +375,7 @@ class _HomeState extends State<StatefulWidget>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Lorem Ipsum',
+                        'StyleLagi',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 28,
@@ -385,7 +386,7 @@ class _HomeState extends State<StatefulWidget>
                         padding: const EdgeInsets.symmetric(horizontal: 40.0),
                         child: Center(
                           child: Text(
-                            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                            'From drab to fab, #StyleLagi your outfits everyday',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
@@ -467,10 +468,17 @@ class _HomeState extends State<StatefulWidget>
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   // icon next
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.black,
-                    size: 16,
+                  GestureDetector(
+                    onTap: () {
+                      // push to reccomended screen
+                      MaterialPageRoute(
+                          builder: (context) => RecommendedScreen());
+                    },
+                    child: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.black,
+                      size: 16,
+                    ),
                   ),
                 ],
               ),
