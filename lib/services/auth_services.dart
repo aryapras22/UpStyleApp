@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:upstyleapp/screen/role_screen.dart';
 
 class AuthServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -96,13 +98,20 @@ class AuthServices {
   }
 
   //Google Sign In
-  Future<UserCredential> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     // Trigger the Google Sign In process
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+    if (googleUser == null) {
+      throw FirebaseAuthException(
+        code: 'ERROR_ABORTED_BY_USER',
+        message: 'Sign in aborted by user',
+      );
+    }
+
     // Obtain the GoogleSignInAuthentication object
     final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+        await googleUser.authentication;
 
     // Create a new credential
     final googleCredential = GoogleAuthProvider.credential(
@@ -111,6 +120,32 @@ class AuthServices {
     );
 
     // Sign in to Firebase with the Google Auth credential
-    return await FirebaseAuth.instance.signInWithCredential(googleCredential);
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(googleCredential);
+
+    final User? user = userCredential.user;
+
+    if (user != null) {
+      await checkAndCreateUser(user, context);
+    }
+
+    return user;
+  }
+
+  Future<void> checkAndCreateUser(User user, BuildContext context) async {
+    final userDoc = await _firestore.collection('users').doc(user.uid).get();
+    if (!userDoc.exists) {
+      await _firestore.collection('users').doc(user.uid).set({
+        'uid': user.uid,
+        'email': user.email,
+        'role': '', // Atur default role kosong di sini
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RoleScreen(),
+        ),
+      );
+    }
   }
 }

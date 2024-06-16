@@ -12,7 +12,20 @@
           "package_name": "com.upstyle.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1098215056967-1ah161fm8hh355ocg0ihnuruph83vri1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.upstyle.app",
+            "certificate_hash": "c964ebde33cb6142f5f63342b474c74e577167ab"
+          }
+        },
+        {
+          "client_id": "1098215056967-i20n488kbeuk4udofumhrsn0s2gkll0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAB-pshj-09Su1u04P0D7K3JjSIv7kL0rY"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098215056967-i20n488kbeuk4udofumhrsn0s2gkll0f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1098215056967-hpng5tb7q3i00hbtg341r11acr40dp1d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.upstyle.RunnerTests"
+              }
+            }
+          ]
         }
       }
     }

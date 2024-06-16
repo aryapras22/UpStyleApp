@@ -20,6 +20,7 @@ class InputEditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -29,6 +30,7 @@ class InputEditProfile extends StatelessWidget {
         readOnly: isReadOnly,
         decoration: InputDecoration(
           prefixIcon: Container(
+            margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.all(16), // Adjust the padding here
             decoration: const BoxDecoration(
               color: Colors.grey,
@@ -40,8 +42,8 @@ class InputEditProfile extends StatelessWidget {
             child: Icon(prefixIcon, color: Colors.white, size: 24),
           ),
           prefixIconConstraints: const BoxConstraints(
-            minWidth: 60, // Ensure the minimum width is enough
-            minHeight: 60, // Ensure the minimum height is enough
+            minWidth: 50, // Ensure the minimum width is enough
+            minHeight: 50, // Ensure the minimum height is enough
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
