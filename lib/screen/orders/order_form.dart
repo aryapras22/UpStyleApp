@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:image_picker/image_picker.dart';
 import 'package:upstyleapp/model/order.dart';
 import 'package:upstyleapp/services/order_service.dart';
@@ -11,8 +12,9 @@ final _currentUser = FirebaseAuth.instance.currentUser!;
 
 class OrderForm extends StatefulWidget {
   final String custId;
+  final types.Room room;
 
-  const OrderForm({super.key, required this.custId});
+  const OrderForm({super.key, required this.custId, required this.room});
 
   @override
   State<OrderForm> createState() => _OrderFormState();
@@ -46,7 +48,7 @@ class _OrderFormState extends State<OrderForm> {
       status: OrderStatus.waiting,
       date: DateTime.now(),
     );
-    await _orderService.createOrder(order);
+    await _orderService.createOrder(order, widget.room);
     if (!mounted) {
       return;
     }

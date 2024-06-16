@@ -118,6 +118,9 @@ class ChatService {
         if (snapshot.docs[0].data()['type'] == 'image') {
           return 'user send an image';
         }
+        if (snapshot.docs[0].data()['type'] == 'custom') {
+          return 'user send an order';
+        }
         return snapshot.docs[0].data()['text'];
       } else {
         return '';
@@ -125,5 +128,24 @@ class ChatService {
     } catch (e) {
       throw e;
     }
+  }
+
+  // send custom message order to chat
+  void sendOrderMessage(
+    types.Room room,
+    String orderId,
+    String orderTitle,
+    String orderPrice,
+    String orderImageUrl,
+  ) async {
+    final message = types.PartialCustom(
+      metadata: {
+        'orderId': orderId,
+        'orderTitle': orderTitle,
+        'orderPrice': orderPrice,
+        'orderImageUrl': orderImageUrl,
+      },
+    );
+    FirebaseChatCore.instance.sendMessage(message, room.id);
   }
 }

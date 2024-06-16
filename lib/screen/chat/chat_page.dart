@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:upstyleapp/screen/orders/order_form.dart';
 import 'package:upstyleapp/services/chat_service.dart';
 import 'package:upstyleapp/services/post_service.dart';
+import 'package:upstyleapp/widgets/order_message.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;
@@ -64,14 +66,33 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (ctx) => OrderForm(
         custId: otherUserId,
+        room: widget.room,
       ),
     );
+  }
+
+  Widget sendOrder(types.CustomMessage customMessage,
+      {required int messageWidth}) {
+    if (customMessage.metadata != null &&
+        customMessage.metadata!['orderId'] != null) {
+      String orderId = customMessage.metadata!['orderId'];
+      String title = customMessage.metadata!['orderTitle'];
+      String price = customMessage.metadata!['orderPrice'];
+      String imageUrl = customMessage.metadata!['orderImageUrl'];
+      return OrderMessage(
+        imageUrl: imageUrl,
+        title: title,
+        price: price,
+        orderId: orderId,
+      );
+    }
+    return Container();
   }
 
   // _user = types.User(id: user!.uid, firstName: user!.displayName!);
   @override
   void initState() {
-    _user = types.User(id: user!.uid, firstName: user!.displayName!);
+    _user = types.User(id: user!.uid, firstName: user!.displayName);
     getUser();
     super.initState();
   }
@@ -131,7 +152,6 @@ class _ChatPageState extends State<ChatPage> {
                 onPressed: () {
                   // Add your more options button action here
                   // show delete chat, report user
-                  
                 },
               ),
             ],
@@ -141,6 +161,11 @@ class _ChatPageState extends State<ChatPage> {
               initialData: [],
               builder: (context, snapshot) {
                 _messages = snapshot.data ?? [];
+                if (snapshot.data![0].metadata != null) {
+                  types.CustomMessage customMessage =
+                      snapshot.data![0] as types.CustomMessage;
+                }
+
                 return Chat(
                   theme: DefaultChatTheme(
                       inputBackgroundColor: Colors.white,
@@ -173,6 +198,7 @@ class _ChatPageState extends State<ChatPage> {
                   onSendPressed: _handleSendPressed,
                   user: _user,
                   onAttachmentPressed: _handleImageSelection,
+                  customMessageBuilder: sendOrder,
                 );
               }),
         ),
