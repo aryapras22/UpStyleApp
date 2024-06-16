@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:upstyleapp/screen/role_screen.dart';
+import 'package:upstyleapp/screen/auth_screen.dart';
 
 class AuthServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -70,6 +71,20 @@ class AuthServices {
     try {
       await _firebaseAuth.signOut();
       await GoogleSignIn().signOut();
+    } catch (e) {
+      print('Error logging out: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> logoutWithContext(BuildContext context) async {
+    try {
+      await _firebaseAuth.signOut();
+      await GoogleSignIn().signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AuthScreen()),
+      );
     } catch (e) {
       print('Error logging out: $e');
       rethrow;

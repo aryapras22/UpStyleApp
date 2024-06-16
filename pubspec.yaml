@@ -52,6 +52,7 @@ dependencies:
   flutter_riverpod:
   google_sign_in:
   buttons_tabbar: ^1.3.10
+  flutter_rating_stars: ^1.1.0
 
 dev_dependencies:
   flutter_test:

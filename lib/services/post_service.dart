@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/model/post.dart';
 import 'package:uuid/uuid.dart';
 
 class PostService {
-
   // collection group query
   // Future<List<DocumentSnapshot>> readAllPosts() async {
   //   try {
@@ -171,6 +172,21 @@ class PostService {
       } else {
         return [];
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<QuerySnapshot<Post>> getUserPosts() async {
+    try {
+      return await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('posts')
+          .withConverter(
+              fromFirestore: Post.fromFirestore,
+              toFirestore: (post, options) => post.toMap())
+          .get();
     } catch (e) {
       rethrow;
     }

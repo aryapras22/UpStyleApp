@@ -14,7 +14,7 @@ import 'package:upstyleapp/services/post_service.dart';
 
 class ChatPage extends StatefulWidget {
   final types.Room room;
-  ChatPage({super.key, required this.room});
+  const ChatPage({super.key, required this.room});
 
   @override
   State<ChatPage> createState() => _ChatPageState();

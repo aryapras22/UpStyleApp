@@ -99,8 +99,6 @@ class ChatService {
     return otherUsername;
   }
 
-
-
   // get current user
   Future<String> getCurrentUser() async {
     return _auth.currentUser!.uid;
@@ -123,11 +121,9 @@ class ChatService {
         return snapshot.docs[0].data()['text'];
       } else {
         return '';
-
       }
     } catch (e) {
       throw e;
     }
   }
-
 }

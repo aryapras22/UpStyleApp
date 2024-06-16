@@ -8,7 +8,7 @@ import 'package:upstyleapp/services/post_service.dart';
 
 class ChatRoomTile extends StatefulWidget {
   final types.Room room;
-  ChatRoomTile({super.key, required this.room});
+  const ChatRoomTile({super.key, required this.room});
 
   @override
   State<ChatRoomTile> createState() => _ChatRoomTileState();

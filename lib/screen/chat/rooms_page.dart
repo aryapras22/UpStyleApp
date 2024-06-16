@@ -6,7 +6,7 @@ import 'package:upstyleapp/widgets/chat_room_tile.dart';
 class RoomsPage extends StatelessWidget {
   RoomsPage({super.key});
 
-  ChatService chatService = ChatService();
+  final ChatService chatService = ChatService();
 
   @override
   Widget build(BuildContext context) {

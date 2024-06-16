@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Post with ChangeNotifier {
   String id;
@@ -9,8 +14,6 @@ class Post with ChangeNotifier {
   String time;
   String userId;
 
-  
-
   Post({
     required this.id,
     required this.name,
@@ -20,6 +23,21 @@ class Post with ChangeNotifier {
     required this.time,
     required this.userId,
   });
+
+  factory Post.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> data,
+    SnapshotOptions? options,
+  ) {
+    return Post(
+      id: data.id,
+      name: '',
+      userAvatar: '',
+      postImage: data.data()!['image_url'],
+      caption: data.data()!['text'],
+      time: data.data()!['created_at'].toString(),
+      userId: FirebaseAuth.instance.currentUser!.uid,
+    );
+  }
 
   factory Post.fromMap(Map<String, dynamic> data) {
     return Post(
@@ -33,5 +51,14 @@ class Post with ChangeNotifier {
     );
   }
 
-  // get posts
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'userAvatar': userAvatar,
+      'postImage': postImage,
+      'caption': caption,
+      'time': time,
+      'userId': userId,
+    };
+  }
 }

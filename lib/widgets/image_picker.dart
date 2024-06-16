@@ -32,7 +32,7 @@ class _ProfileImagePickerState extends ConsumerState<ProfileImagePicker> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProfileProvider);
-    final imageUrl = user!.imageUrl;
+    final imageUrl = user.imageUrl;
 
     var content = imageUrl != null && imageUrl.isNotEmpty
         ? Image.network(

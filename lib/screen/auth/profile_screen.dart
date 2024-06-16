@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/auth/edit_profile_screen.dart';
+import 'package:upstyleapp/screen/auth/my_gallery_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/widgets/profile_option.dart';
@@ -21,16 +22,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final user = ref.watch(userProfileProvider);
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Profile'),
         centerTitle: true,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-        ),
-        padding: const EdgeInsets.all(16),
+      body: Padding(
+        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
         child: Column(
           children: [
             Container(
@@ -101,6 +100,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             const SizedBox(height: 8),
             ProfileOption(
+              icon: Icons.filter,
+              text: 'My Gallery',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MyGalleryScreen(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            ProfileOption(
               icon: Icons.favorite_border,
               text: 'Favorites',
               onTap: () {},
@@ -124,7 +134,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               icon: Icons.logout,
               text: 'Logout',
               onTap: () {
-                authServices.logout();
+                authServices.logoutWithContext(context);
               },
             ),
           ],
