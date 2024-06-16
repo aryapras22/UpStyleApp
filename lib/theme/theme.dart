@@ -32,6 +32,21 @@ ThemeData lightMode = ThemeData(
       color: Color.fromARGB(255, 150, 150, 150),
       fontFamily: 'ProductSansMedium',
     ),
+    bodyLarge: TextStyle(
+      fontSize: 18,
+      color: Colors.black,
+      fontFamily: 'ProductSansMedium',
+    ),
+    bodyMedium: TextStyle(
+      fontSize: 16,
+      color: Color.fromARGB(255, 150, 150, 150),
+      fontFamily: 'ProductSansMedium',
+    ),
+    bodySmall: TextStyle(
+      fontSize: 14,
+      color: Color.fromARGB(255, 150, 150, 150),
+      fontFamily: 'ProductSansMedium',
+    ),
   ),
   inputDecorationTheme: const InputDecorationTheme(
     fillColor: Colors.white,

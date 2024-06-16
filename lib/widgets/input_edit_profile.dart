@@ -42,8 +42,8 @@ class InputEditProfile extends StatelessWidget {
             child: Icon(prefixIcon, color: Colors.white, size: 24),
           ),
           prefixIconConstraints: const BoxConstraints(
-            minWidth: 50, // Ensure the minimum width is enough
-            minHeight: 50, // Ensure the minimum height is enough
+            minWidth: 60, // Ensure the minimum width is enough
+            minHeight: 60, // Ensure the minimum height is enough
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 16, horizontal: 32),

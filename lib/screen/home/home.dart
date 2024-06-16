@@ -63,44 +63,46 @@ class _HomeState extends State<Home> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
-                  onTap: () async {
-                    final pickedFile = await _picker.pickImage(
-                        source: ImageSource.gallery, imageQuality: 80);
-                    setState(() {
-                      if (pickedFile != null) {
-                        _image = File(pickedFile.path);
-                      } else {
-                        SnackBar(
-                          content: Text('No image selected.'),
-                        );
-                      }
-                    });
-                  },
+                    onTap: () async {
+                      final pickedFile = await _picker.pickImage(
+                          source: ImageSource.gallery, imageQuality: 80);
+                      setState(() {
+                        if (pickedFile != null) {
+                          _image = File(pickedFile.path);
+                        } else {
+                          SnackBar(
+                            content: Text('No image selected.'),
+                          );
+                        }
+                      });
+                    },
                     child: _image == null
                         ? DottedBorder(
-                    borderType: BorderType.RRect,
-                    color: Theme.of(context).colorScheme.primary,
-                    dashPattern: [6, 3],
-                    strokeWidth: 2,
-                    radius: Radius.circular(10),
-                    child: SizedBox(
-                      width: 500,
-                      height: 300,
-                      child: Center(
+                            borderType: BorderType.RRect,
+                            color: Theme.of(context).colorScheme.primary,
+                            dashPattern: [6, 3],
+                            strokeWidth: 2,
+                            radius: Radius.circular(10),
+                            child: SizedBox(
+                              width: 500,
+                              height: 300,
+                              child: Center(
                                 child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset('assets/icons/upload_active.png'),
-                                  Text(
-                                    "Upload your image here",
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
-                                ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                        'assets/icons/upload_active.png'),
+                                    Text(
+                                      "Upload your image here",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                  ],
+                                ),
                               ),
-                      ),
-                    ),
+                            ),
                           )
                         : Container(
                             decoration: BoxDecoration(
@@ -120,9 +122,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
-                          )
-                          
-                ),
+                          )),
                 SizedBox(height: 10),
                 TextField(
                   controller: _captionController,
@@ -232,7 +232,7 @@ class _HomeState extends State<Home> {
       var value = await _postService.getUserData(doc['user_id']);
       name = value['name'];
       // avatar = value['image_url'];
-      posts.add( 
+      posts.add(
         Post(
           id: doc.id,
           name: name,
