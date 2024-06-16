@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:upstyleapp/screen/chat/chat_page.dart';
 import 'package:upstyleapp/services/auth_services.dart';
@@ -71,9 +72,13 @@ class _ProfileDetailState extends State<ProfileDetail> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
+                color: Colors.black,
               ),
             ),
-            Text(status),
+            Text(
+              status,
+              style: TextStyle(color: Colors.black),
+            ),
           ],
         ),
       ),
@@ -95,6 +100,58 @@ class _ProfileDetailState extends State<ProfileDetail> {
       appBar: AppBar(
         title: Text('Profile Designer'),
         centerTitle: true,
+      ),
+      bottomSheet: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.file_upload_outlined,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  createChat();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 238, 99, 56),
+                  minimumSize: Size(double.infinity, 50.0),
+                  maximumSize: Size(double.infinity, 50.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(right: 10.0),
+                      child: Icon(
+                        Icons.chat,
+                        color: Colors.white,
+                        size: 18.0,
+                      ),
+                    ),
+                    Text(
+                      "Chat to Order",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -136,8 +193,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    "Ali Ahmad Fahrezy",
+                    name,
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w400,
                     ),
@@ -164,6 +222,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               child: Text(
                 "Review",
                 style: TextStyle(
+                  color: Colors.black,
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
                 ),
@@ -208,6 +267,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               child: Text(
                 "Portofolio",
                 style: TextStyle(
+                  color: Colors.black,
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
                 ),
