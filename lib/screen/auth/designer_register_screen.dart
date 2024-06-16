@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
@@ -21,6 +24,47 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
 
+  bool isEmailVerified = false;
+  Timer? timer;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    timer =
+        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
+  }
+
+  checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser?.reload();
+
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+
+    if (isEmailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email Successfully Verified")));
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+      timer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   void _isObscurePassword() {
     setState(() {
       _obscureTextPassword = !_obscureTextPassword;
@@ -33,7 +77,8 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
     });
   }
 
-  Future<void> _register() async {
+
+Future<void> _register() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -45,22 +90,54 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
         name: _nameController.text,
         role: 'designer',
       );
-      // Navigasi ke halaman lain atau tampilkan pesan sukses
-      Navigator.pushReplacement(
+      
+      if (isEmailVerified) {
+        Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const DashboardScreen(),
         ),
       );
+      } else {
+        // loading pop up center waiting to verify email
+        setState(() {
+          isLoading = true;
+        });
+      }
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
     }
   }
-
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Text("Check your email to verify your account"),
+              ),
+              // route back to register page
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Back to Register"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

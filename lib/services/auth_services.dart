@@ -26,6 +26,10 @@ class AuthServices {
         password: password,
       );
       User? user = userCredential.user;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
+      if (user!.emailVerified) {}
 
       if (user != null) {
         // Save additional data to Firestore

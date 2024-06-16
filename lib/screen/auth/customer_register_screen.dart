@@ -1,3 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
@@ -12,20 +17,60 @@ class CustomerRegisterScreen extends StatefulWidget {
 class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   final AuthServices _authServices = AuthServices();
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _nameController = TextEditingController();
-
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
+
+  bool isEmailVerified = false;
+  Timer? timer;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    timer =
+        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
+  }
+
+  checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser?.reload();
+
+    setState(() {
+      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+    });
+
+    if (isEmailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email Successfully Verified")));
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+      timer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   void _isObscurePassword() {
     setState(() {
       _obscureTextPassword = !_obscureTextPassword;
     });
   }
+  
 
   void _isObscureConfirmPassword() {
     setState(() {
@@ -45,14 +90,21 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
         name: _nameController.text,
         role: 'customer',
       );
-      // Navigasi ke halaman dashboard
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
+      
+      if (isEmailVerified) {
+        Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const DashboardScreen(),
         ),
       );
+      } else {
+        // loading pop up center waiting to verify email
+        setState(() {
+          isLoading = true;
+        });
+      }
+      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -62,6 +114,31 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+if (isLoading) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Text("Check your email to verify your account"),
+              ),
+              // route back to register page
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Back to Register"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
