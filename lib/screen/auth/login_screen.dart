@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/dashboard_screen.dart';
+import 'package:upstyleapp/screen/auth_screen.dart';
 import 'package:upstyleapp/screen/register_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (user != null) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
+          MaterialPageRoute(builder: (context) => AuthScreen()),
         );
       }
     } catch (e) {
@@ -281,13 +281,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         try {
-                          await _authServices.signInWithGoogle();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DashboardScreen(),
-                            ),
-                          );
+                          User? user =
+                              await _authServices.signInWithGoogle(context);
+                          if (user != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AuthScreen(),
+                              ),
+                            );
+                          }
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Error: $e')),

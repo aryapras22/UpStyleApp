@@ -1,7 +1,4 @@
 // ignore_for_file: use_rethrow_when_possible
-
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -65,6 +62,7 @@ class ChatService {
   );
 
   // upload image
+
   Future<bool> sendImage(types.Room room, File image) async {
     final bytes = await image.readAsBytes();
     final image0 = File(image.path);
@@ -100,6 +98,7 @@ class ChatService {
   }
 
 
+
   // get current user
   Future<String> getCurrentUser() async {
     return _auth.currentUser!.uid;
@@ -122,6 +121,7 @@ class ChatService {
         return snapshot.docs[0].data()['text'];
       } else {
         return '';
+
       }
     } catch (e) {
       throw e;

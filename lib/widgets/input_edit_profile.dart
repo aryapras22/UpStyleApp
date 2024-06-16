@@ -20,6 +20,7 @@ class InputEditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -29,6 +30,7 @@ class InputEditProfile extends StatelessWidget {
         readOnly: isReadOnly,
         decoration: InputDecoration(
           prefixIcon: Container(
+            margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.all(16), // Adjust the padding here
             decoration: const BoxDecoration(
               color: Colors.grey,
