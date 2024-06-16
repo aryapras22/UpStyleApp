@@ -37,12 +37,3 @@ class RoomsPage extends StatelessWidget {
     );
   }
 }
-
-// Column(
-//         children: [
-//           ChatRoomTile(),
-//           ChatRoomTile(),
-//           ChatRoomTile(),
-//           ChatRoomTile(),
-//         ],
-//       ),

@@ -115,7 +115,9 @@ class _OrderScreenState extends State<OrderScreen> {
                         const EdgeInsets.only(right: 20, left: 20, bottom: 20),
 >>>>>>> f1a81b4f97a7f3ee68f73c630444cdbcc6b58b9f
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
+                      ),
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
                     child: TabBar(

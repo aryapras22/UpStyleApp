@@ -113,7 +113,8 @@ class _ChatPageState extends State<ChatPage> {
                 icon: Icon(Icons.file_copy, color: Colors.black),
                 onPressed: () {
                   // send an order to user
-                  OrderForm();
+                  // send an chat form
+                  
                 },
               ),
               IconButton(
@@ -165,6 +166,7 @@ class _ChatPageState extends State<ChatPage> {
               }),
         ),
       );
+
   void _handleSendPressed(message) {
     chatService.sendMessage(message, widget.room);
   }
@@ -205,16 +207,14 @@ class _ChatPageState extends State<ChatPage> {
                       );
 
                       if (pickedFile != null) {
-                        final bytes = await pickedFile.readAsBytes();
-                        final image = await decodeImageFromList(bytes);
+                        // final bytes = await pickedFile.readAsBytes();
+                        // final _image = File(pickedFile.path);
 
-                        
-
-                        imageMessage = types.PartialImage(
-                          name: pickedFile.name,
-                          size: bytes.length,
-                          uri: pickedFile.path,
-                        );
+                        // imageMessage = types.PartialImage(
+                        //   name: pickedFile.name,
+                        //   size: bytes.length,
+                        //   uri: pickedFile.path,
+                        // );
                       }
                       setState(() {
                         if (pickedFile != null) {
@@ -275,7 +275,7 @@ class _ChatPageState extends State<ChatPage> {
                           )),
                 SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_image == null) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text('Please select an image.'),
@@ -283,7 +283,17 @@ class _ChatPageState extends State<ChatPage> {
                       return;
                     }
 
-                    chatService.sendImage(imageMessage, widget.room);
+                    bool isLoading = true;
+                    chatService.sendImage(widget.room, _image!).then(
+                      (value) {
+                        isLoading = value;
+                      },
+                    );
+                    if (isLoading == true) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Uploading image...'),
+                      ));
+                    }
                     // clear
                     _image = null;
                     Navigator.of(context).pop();

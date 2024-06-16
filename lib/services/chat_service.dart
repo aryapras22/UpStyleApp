@@ -18,11 +18,13 @@ class ChatService {
   Future<types.Room> createChat(
       types.User otherUser, BuildContext context) async {
     final room = await FirebaseChatCore.instance.createRoom(otherUser);
-    _firestore.collection('chatRooms').doc(room.id).set({
-      'user': _auth.currentUser!.uid,
-      'designer': otherUser.id,
-      'chatRoomId': room.id,
-    });
+    _firestore.collection('chatRooms').doc(room.id).set(
+      {
+        'user': _auth.currentUser!.uid,
+        'designer': otherUser.id,
+        'chatRoomId': room.id,
+      },
+    );
     return room;
   }
 
@@ -53,22 +55,27 @@ class ChatService {
     }
   }
 
-  // upload image
-  Future<void> sendImage(message, types.Room room) async {
-    
-    FirebaseChatCore.instance.sendMessage(message, room.id);
-<<<<<<< HEAD
-=======
+  types.PartialImage imageMessage = const types.PartialImage(
+    name: 'image',
+    uri: 'image',
+    size: 0,
+  );
 
-    FirebaseChatCore.instance.sendMessage(message, room.id);
->>>>>>> f1a81b4f97a7f3ee68f73c630444cdbcc6b58b9f
-    // update image uri in firestore
-    _firestore
-        .collection('rooms')
-        .doc(room.id)
-        .collection('messages')
-        .doc(message.id)
-        .update({'imageUri': message.imageUri});
+  // upload image
+
+  Future<bool> sendImage(types.Room room, File image) async {
+    final bytes = await image.readAsBytes();
+    final image0 = File(image.path);
+    final ref = _storage.ref().child('chatrooms/${room.id}/${uuid.v4()}');
+    await ref.putFile(image0);
+    final uri = await ref.getDownloadURL();
+    imageMessage = types.PartialImage(
+      name: image.path.split('/').last,
+      size: bytes.length,
+      uri: uri.toString(),
+    );
+    FirebaseChatCore.instance.sendMessage(imageMessage, room.id);
+    return false;
   }
 
   // get otherUsername from chatRooms collection with input of chatroom id
@@ -90,24 +97,35 @@ class ChatService {
     return otherUsername;
   }
 
-  // get latest chat and time
-  Future<Map<String, dynamic>> getLatestChat(String chatRoomId) async {
-    Map<String, dynamic> latestChatAndTime = {};
-    await _firestore
-        .collection('chatRooms')
-        .doc(chatRoomId)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .limit(1)
-        .get()
-        .then((value) {
-      if (value.docs.isNotEmpty) {
-        latestChatAndTime = {
-          'latestChat': value.docs[0].data()['text'],
-          'latestChatTime': value.docs[0].data()['timestamp'],
-        };
-      }
-    });
-    return latestChatAndTime;
+
+
+  // get current user
+  Future<String> getCurrentUser() async {
+    return _auth.currentUser!.uid;
   }
+
+  // find latest chat from rooms collection usiing room id
+  Future<String> getLatestChat(types.Room room) async {
+    try {
+      final snapshot = await _firestore
+          .collection('rooms')
+          .doc(room.id)
+          .collection('messages')
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .get();
+      if (snapshot.docs.isNotEmpty) {
+        if (snapshot.docs[0].data()['type'] == 'image') {
+          return 'user send an image';
+        }
+        return snapshot.docs[0].data()['text'];
+      } else {
+        return '';
+
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
 }
