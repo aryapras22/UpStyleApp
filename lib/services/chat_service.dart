@@ -1,10 +1,6 @@
 // ignore_for_file: use_rethrow_when_possible
-
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -61,6 +57,11 @@ class ChatService {
   Future<void> sendImage(message, types.Room room) async {
     
     FirebaseChatCore.instance.sendMessage(message, room.id);
+<<<<<<< HEAD
+=======
+
+    FirebaseChatCore.instance.sendMessage(message, room.id);
+>>>>>>> f1a81b4f97a7f3ee68f73c630444cdbcc6b58b9f
     // update image uri in firestore
     _firestore
         .collection('rooms')
@@ -88,7 +89,6 @@ class ChatService {
     });
     return otherUsername;
   }
-
 
   // get latest chat and time
   Future<Map<String, dynamic>> getLatestChat(String chatRoomId) async {
