@@ -105,16 +105,16 @@ class _ChatPageState extends State<ChatPage> {
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.circle, color: Colors.green, size: 12),
-                        SizedBox(width: 4),
-                        Text(
-                          'Online',
-                          style: TextStyle(color: Colors.green, fontSize: 12),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Icon(Icons.circle, color: Colors.green, size: 12),
+                    //     SizedBox(width: 4),
+                    //     Text(
+                    //       'Online',
+                    //       style: TextStyle(color: Colors.green, fontSize: 12),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ],
@@ -130,6 +130,8 @@ class _ChatPageState extends State<ChatPage> {
                 icon: Icon(Icons.more_vert, color: Colors.black),
                 onPressed: () {
                   // Add your more options button action here
+                  // show delete chat, report user
+                  
                 },
               ),
             ],

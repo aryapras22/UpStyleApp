@@ -40,12 +40,18 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
         });
       });
     }
+
     DateTime time = DateTime.fromMillisecondsSinceEpoch(widget.room.updatedAt!);
     await chatService.getLatestChat(widget.room).then(
       (value) {
         setState(() {
           latestChat = value;
-          latestChatTime = '${time.hour}:${time.minute}';
+          // if time is more than 12 hours, show date
+          if (DateTime.now().difference(time).inHours > 12) {
+            latestChatTime = '${time.day}/${time.month}';
+          } else {
+            latestChatTime = '${time.hour}:${time.minute}';
+          }
         });
       },
     );
