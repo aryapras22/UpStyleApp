@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 enum OrderStatus { waiting, inProgress, completed, canceled }
 
-class Order {
+class OrderModel {
   String designerId;
   String customerId;
   String imageUrl;
@@ -13,7 +13,7 @@ class Order {
   OrderStatus status;
   DateTime date;
   String? paymentMethod;
-  Order(
+  OrderModel(
       {required this.designerId,
       required this.customerId,
       required this.imageUrl,

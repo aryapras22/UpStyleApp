@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:upstyleapp/screen/order/order_form.dart';
+import 'package:upstyleapp/screen/orders/order_form.dart';
 import 'package:upstyleapp/services/chat_service.dart';
 import 'package:upstyleapp/services/post_service.dart';
 
@@ -55,6 +55,17 @@ class _ChatPageState extends State<ChatPage> {
         });
       });
     });
+  }
+
+  void _showOrderForm(BuildContext context) {
+    showModalBottomSheet(
+      useSafeArea: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => OrderForm(
+        custId: otherUserId,
+      ),
+    );
   }
 
   // _user = types.User(id: user!.uid, firstName: user!.displayName!);
@@ -112,9 +123,7 @@ class _ChatPageState extends State<ChatPage> {
               IconButton(
                 icon: Icon(Icons.file_copy, color: Colors.black),
                 onPressed: () {
-                  // send an order to user
-                  // send an chat form
-                  
+                  _showOrderForm(context);
                 },
               ),
               IconButton(

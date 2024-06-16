@@ -3,7 +3,7 @@ import 'package:upstyleapp/model/order.dart';
 
 class OrderCard extends StatelessWidget {
   OrderCard({required this.order, super.key});
-  Order order;
+  OrderModel order;
 
   @override
   Widget build(BuildContext context) {
@@ -125,57 +125,31 @@ class OrderCard extends StatelessWidget {
                                     .copyWith(
                                         color: Colors.white, fontSize: 12)),
                           )
-                        : order.status == OrderStatus.canceled
-                            ? ElevatedButton.icon(
-                                style: ButtonStyle(
-                                  padding: const WidgetStatePropertyAll(
-                                    EdgeInsets.symmetric(horizontal: 16),
-                                  ),
-                                  shape: WidgetStatePropertyAll<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.replay,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                label: Text('Pesan Lagi',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(
-                                            color: Colors.white, fontSize: 12)),
-                              )
-                            : ElevatedButton.icon(
-                                style: ButtonStyle(
-                                  padding: const WidgetStatePropertyAll(
-                                    EdgeInsets.symmetric(horizontal: 16),
-                                  ),
-                                  shape: WidgetStatePropertyAll<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.message_rounded,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                label: Text('Chat Designer',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(
-                                            color: Colors.white, fontSize: 12)),
+                        : ElevatedButton.icon(
+                            style: ButtonStyle(
+                              padding: const WidgetStatePropertyAll(
+                                EdgeInsets.symmetric(horizontal: 16),
                               ),
+                              shape: WidgetStatePropertyAll<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.message_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            label: Text('Chat Designer',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Colors.white, fontSize: 12)),
+                          ),
                   ],
                 ),
               ],
