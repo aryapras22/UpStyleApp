@@ -34,13 +34,6 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
       });
     });
     _filterController = TabController(length: filters.length, vsync: this);
-    // _filterController.addListener(() {
-    //   setState(() {
-    //     int index = _filterController.index;
-    //     posts.clear();
-    //     _fetchData();
-    //   });
-    // });
     _fetchData();
     super.initState();
   }
@@ -121,7 +114,9 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                 GestureDetector(
                     onTap: () async {
                       final pickedFile = await _picker.pickImage(
-                          source: ImageSource.gallery, imageQuality: 80);
+                          source: ImageSource.gallery,
+                          imageQuality: 80,
+                          maxHeight: 400);
                       setState(() {
                         if (pickedFile != null) {
                           _image = File(pickedFile.path);
@@ -441,16 +436,26 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.filter_list,
-                      color: Theme.of(context).colorScheme.primary,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BrowsePage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.filter_list,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -466,20 +471,10 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   // icon next
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BrowsePage(),
-                        ),
-                      );
-                    },
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.black,
-                      size: 16,
-                    ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.black,
+                    size: 16,
                   ),
                 ],
               ),

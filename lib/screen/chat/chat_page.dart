@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +12,6 @@ import 'package:upstyleapp/screen/orders/order_form.dart';
 import 'package:upstyleapp/services/chat_service.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/order_message.dart';
-import 'package:uuid/uuid.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final types.Room room;
@@ -48,6 +45,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   String latestChatTime = '';
   Map<String, dynamic> latestChatAndTime = {};
   String otherUserId = '';
+
 
   void getUser() async {
     await chatService.getOtherUsername(widget.room.id).then((value) {
@@ -164,11 +162,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           initialData: [],
           builder: (context, snapshot) {
             _messages = snapshot.data ?? [];
-            // if (snapshot.data![0].metadata != null) {
-            //   types.CustomMessage customMessage =
-            //       snapshot.data![0] as types.CustomMessage;
-            // }
-
             return Chat(
               theme: DefaultChatTheme(
                   inputBackgroundColor: Colors.white,

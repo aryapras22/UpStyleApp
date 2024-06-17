@@ -6,8 +6,9 @@ import 'package:upstyleapp/screen/home/profile_detail.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
+  bool isFavorite = true;
 
-  const PostCard({required this.post});
+  PostCard({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,10 @@ class PostCard extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                Icon(Icons.favorite_border),
+                Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                ),
               ],
             ),
             SizedBox(height: 10),
