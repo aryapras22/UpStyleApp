@@ -168,6 +168,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 return Chat(
                   theme: DefaultChatTheme(
+                      
                       inputBackgroundColor: Colors.white,
                       inputTextColor: Colors.black,
                       primaryColor: Theme.of(context).colorScheme.primary,

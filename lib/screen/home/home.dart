@@ -8,7 +8,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:upstyleapp/model/post.dart';
-import 'package:upstyleapp/screen/home/recommended_screen.dart';
+import 'package:upstyleapp/screen/home/browse_page.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
@@ -468,9 +468,12 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                   // icon next
                   GestureDetector(
                     onTap: () {
-                      // push to reccomended screen
-                      MaterialPageRoute(
-                          builder: (context) => RecommendedScreen());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BrowsePage(),
+                        ),
+                      );
                     },
                     child: Icon(
                       Icons.arrow_forward_ios,
