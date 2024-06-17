@@ -112,37 +112,35 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             Navigator.pop(context);
           },
         ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: imgUrl == ''
-                  ? AssetImage('assets/images/post_avatar.png')
-                  : NetworkImage(imgUrl), // Replace with your image URL
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name == '' ? 'User' : name,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                // Row(
-                //   children: [
-                //     Icon(Icons.circle, color: Colors.green, size: 12),
-                //     SizedBox(width: 4),
-                //     Text(
-                //       'Online',
-                //       style: TextStyle(color: Colors.green, fontSize: 12),
-                //     ),
-                //   ],
-                // ),
-              ],
-            ),
-          ],
-        ),
+        title: Row(children: [
+          CircleAvatar(
+            backgroundImage: imgUrl == ''
+                ? AssetImage('assets/images/post_avatar.png')
+                : NetworkImage(imgUrl), // Replace with your image URL
+          ),
+          SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name == '' ? 'User' : name,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              // Row(
+              //   children: [
+              //     Icon(Icons.circle, color: Colors.green, size: 12),
+              //     SizedBox(width: 4),
+              //     Text(
+              //       'Online',
+              //       style: TextStyle(color: Colors.green, fontSize: 12),
+              //     ),
+              //   ],
+              // ),
+            ],
+          ),
+        ]),
         actions: [
           _userData.role != 'designer'
               ? SizedBox()
@@ -166,10 +164,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           initialData: [],
           builder: (context, snapshot) {
             _messages = snapshot.data ?? [];
-            if (snapshot.data![0].metadata != null) {
-              types.CustomMessage customMessage =
-                  snapshot.data![0] as types.CustomMessage;
-            }
+            // if (snapshot.data![0].metadata != null) {
+            //   types.CustomMessage customMessage =
+            //       snapshot.data![0] as types.CustomMessage;
+            // }
 
             return Chat(
               theme: DefaultChatTheme(
