@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/home/genre_page.dart';
 
 class BrowsePage extends StatelessWidget {
   @override
@@ -67,7 +68,12 @@ class BrowseCard extends StatelessWidget {
       color: color,
       child: InkWell(
         onTap: () {
-          // Handle card tap
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GenrePage(genre: title),
+            ),
+          );
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

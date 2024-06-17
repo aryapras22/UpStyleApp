@@ -1,0 +1,92 @@
+// ignore_for_file: prefer_const_constructors
+import 'package:flutter/material.dart';
+import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/services/post_service.dart';
+import 'package:upstyleapp/widgets/post_card.dart';
+
+class GenrePage extends StatefulWidget {
+  final String genre;
+  const GenrePage({super.key, required this.genre});
+
+  @override
+  State<GenrePage> createState() => _GenrePageState();
+}
+
+class _GenrePageState extends State<GenrePage> {
+  bool isLoading = true;
+  final _postService = PostService();
+  List<Post> posts = [];
+
+  void fetchPosts() async {
+    var allPost = await _postService.searchByGenre(widget.genre);
+    if (allPost.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+    String name = '';
+    String avatar = '';
+
+    for (var doc in allPost) {
+      var value = await _postService.getUserData(doc['user_id']);
+      name = value['name'];
+      avatar = value['imageUrl'];
+      posts.add(
+        Post(
+          id: doc.id,
+          name: name,
+          userAvatar: avatar,
+          postImage: doc['image_url'],
+          caption: doc['text'],
+          time: doc['created_at'].toString(),
+          userId: doc['user_id'],
+        ),
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+    fetchPosts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Genre'),
+      ),
+      body: ListView(
+        children: [
+          isLoading
+              ? Container(
+                  alignment: Alignment.center,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      for (var post in posts)
+                        PostCard(
+                          post: post,
+                        ),
+                    ],
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+}

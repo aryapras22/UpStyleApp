@@ -7,22 +7,6 @@ import 'package:upstyleapp/model/post.dart';
 import 'package:uuid/uuid.dart';
 
 class PostService {
-  // collection group query
-  // Future<List<DocumentSnapshot>> readAllPosts() async {
-  //   try {
-  //     QuerySnapshot querySnapshot = await _firestore
-  //         .collectionGroup('posts')
-  //         .orderBy('created_at', descending: true)
-  //         .get();
-  //     if (querySnapshot.docs.isNotEmpty) {
-  //       return querySnapshot.docs;
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -31,8 +15,6 @@ class PostService {
   Future<void> createPost(String text, File file, String userRole) async {
     String uid = _auth.currentUser!.uid;
     String url = '';
-    // String postId = uuid.v4();
-    // get user role
 
     try {
       final storageRef = _storage.ref();
@@ -117,7 +99,7 @@ class PostService {
       QuerySnapshot querySnapshot = await _firestore
           .collection('posts')
           .orderBy('created_at', descending: true)
-          .where('user_role', isNotEqualTo: role)
+          .where('user_role', isEqualTo: role)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         return querySnapshot.docs;
@@ -186,6 +168,24 @@ class PostService {
               fromFirestore: Post.fromFirestore,
               toFirestore: (post, options) => post.toMap())
           .get();
+    } catch (e) {
+      rethrow;
+    }
+  }
+  
+  // search that post have certain genre on their text
+  Future<List<DocumentSnapshot>> searchByGenre(String genre) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('created_at', descending: true)
+          .where('text', isGreaterThanOrEqualTo: genre)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs;
+      } else {
+        return [];
+      }
     } catch (e) {
       rethrow;
     }

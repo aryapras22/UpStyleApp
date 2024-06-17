@@ -1,9 +1,12 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/orders/order_checkout.dart';
 
-class OrderMessage extends StatelessWidget {
+
+class OrderMessage extends ConsumerStatefulWidget {
   final String imageUrl;
   final String title;
   final String price;
@@ -16,8 +19,15 @@ class OrderMessage extends StatelessWidget {
     required this.price,
     required this.orderId,
   });
+
+  @override
+  ConsumerState<OrderMessage> createState() => _OrderMessageState();
+}
+
+class _OrderMessageState extends ConsumerState<OrderMessage> {
   @override
   Widget build(BuildContext context) {
+    final _userData = ref.watch(userProfileProvider);
     return Container(
       padding: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 8.0),
       margin: EdgeInsets.all(16.0),
@@ -41,7 +51,7 @@ class OrderMessage extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
-                  imageUrl, // Replace with the URL of the dress image
+                  widget.imageUrl, // Replace with the URL of the dress image
                   height: 80.0,
                   width: 80.0,
                   fit: BoxFit.cover,
@@ -52,7 +62,7 @@ class OrderMessage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    widget.title,
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -60,7 +70,7 @@ class OrderMessage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Rp.${price.toString()}',
+                    'Rp.${widget.price.toString()}',
                     style: TextStyle(
                       fontSize: 20.0,
                       color: Theme.of(context).colorScheme.primary,
@@ -71,13 +81,15 @@ class OrderMessage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10.0),
+          _userData.role == 'customer'
+              ?
           ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => OrderCheckout(
-                    orderId: orderId,
+                          orderId: widget.orderId,
                   ),
                 ),
               );
@@ -87,12 +99,19 @@ class OrderMessage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 55.0, vertical: 5.0),
             ),
             child: Text(
-              'Proceed to Payment',
+                    'Proceed to Payment',
               style: TextStyle(
                 fontSize: 16.0,
                 color: Colors.white,
               ),
             ),
+                )
+              : Text(
+                  'On Process',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.grey,
+                  ),
           ),
         ],
       ),
