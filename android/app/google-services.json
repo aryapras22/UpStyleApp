@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1098215056967",
+    "project_id": "upstyleapp-c0154",
+    "storage_bucket": "upstyleapp-c0154.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098215056967:android:9d22cebce5fdee4444f362",
+        "android_client_info": {
+          "package_name": "com.stylelagi_team.stylelagi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098215056967-i20n488kbeuk4udofumhrsn0s2gkll0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAB-pshj-09Su1u04P0D7K3JjSIv7kL0rY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098215056967-i20n488kbeuk4udofumhrsn0s2gkll0f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1098215056967-hpng5tb7q3i00hbtg341r11acr40dp1d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.upstyle.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
