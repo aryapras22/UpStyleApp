@@ -172,7 +172,7 @@ class PostService {
       rethrow;
     }
   }
-  
+
   // search that post have certain genre on their text
   Future<List<DocumentSnapshot>> searchByGenre(String genre) async {
     try {
@@ -188,6 +188,53 @@ class PostService {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  // users collection favorites posts
+  Future<void> favoritePost(String postId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('favorites')
+          .where('post_id', isEqualTo: postId)
+          .get();
+      if (querySnapshot.docs.isEmpty) {
+        await _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .collection('favorites')
+            .add({'post_id': postId});
+        // increment favorites count in posts collection using arrayUnion
+        await _firestore.collection('posts').doc(postId).update({
+          'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
+        });
+      }
+    } on Exception catch (e) {
+      throw e;
+    }
+  }
+
+  // users collection unfavorites posts
+  Future<void> unfavoritePost(String postId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('favorites')
+          .where('post_id', isEqualTo: postId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        await _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .collection('favorites')
+            .doc(querySnapshot.docs.first.id)
+            .delete();
+      }
+    } on Exception catch (e) {
+      throw e;
     }
   }
 }
