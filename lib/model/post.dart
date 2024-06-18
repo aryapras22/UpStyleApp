@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Post with ChangeNotifier {
-  String id;
-  String name;
-  String userAvatar;
-  String postImage;
-  String caption;
-  String time;
-  String userId;
+  final String id;
+  final String name;
+  final String userAvatar;
+  final String postImage;
+  final String caption;
+  final String time;
+  final String userId;
+  List favorites;
 
   Post({
     required this.id,
@@ -21,6 +22,7 @@ class Post with ChangeNotifier {
     required this.caption,
     required this.time,
     required this.userId,
+    this.favorites = const [],
   });
 
   factory Post.fromFirestore(

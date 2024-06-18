@@ -306,6 +306,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
           caption: doc['text'],
           time: doc['created_at'].toString(),
           userId: doc['user_id'],
+          favorites: doc['favorites'],
         ),
       );
     }

@@ -1,17 +1,78 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/home/profile_detail.dart';
+import 'package:upstyleapp/services/post_service.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends StatefulWidget {
   final Post post;
-  bool isFavorite = true;
 
   PostCard({required this.post});
 
   @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard>
+    with SingleTickerProviderStateMixin {
+  bool isFavorite = false;
+  late AnimationController _animationController;
+  late Animation<double> _opacityAnimation;
+  late Animation<double> _scaleAnimation;
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+
+// The scale of the icon could go from 80 to 120 here
+    _scaleAnimation = Tween<double>(begin: 80, end: 120).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+  }
+
+  void _animate() {
+// Reset any existing animation state before proceeding
+    _animationController.reset();
+
+// Animate, Magic!
+    _animationController.forward();
+
+// We want to reverse the animation back to its original points after one second, since the like button does not stay on screen or need another action to be dismissed
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      _animationController.reverse();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  PostService postService = PostService();
+
+  @override
   Widget build(BuildContext context) {
+    isFavorite = widget.post.favorites.contains(postService.getCurrentUserId());
+
     return Card(
       color: Colors.white,
       shadowColor: Theme.of(context).shadowColor,
@@ -21,11 +82,46 @@ class PostCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              post.postImage,
-              fit: BoxFit.fill,
-              width: double.infinity,
+            GestureDetector(
+              onDoubleTap: () {
+                _animate();
+                if (isFavorite) {
+                  setState(() {
+                    isFavorite = false;
+                  });
+                  // remove from favorites lists
+                  widget.post.favorites.remove(postService.getCurrentUserId());
+                  postService.unfavoritePost(widget.post.id);
+                } else if (!isFavorite) {
+                  setState(() {
+                    isFavorite = true;
+                  });
+                  widget.post.favorites.add(postService.getCurrentUserId());
+                  postService.favoritePost(widget.post.id);
+                }
+              },
+              child: Stack(alignment: Alignment.center, children: [
+                Image.network(
+                  widget.post.postImage,
+                  fit: BoxFit.fill,
+                  width: double.infinity,
+                ),
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Icon(
+                        CupertinoIcons.heart_fill,
+                        size: _scaleAnimation.value,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    );
+                  },
+                ),
+              ]),
             ),
+            
             SizedBox(height: 10),
             Row(
               children: [
@@ -37,19 +133,19 @@ class PostCard extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ProfileDetail(userId: post.userId),
+                            ProfileDetail(userId: widget.post.userId),
                       ),
                     );
                   },
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage(post.userAvatar),
+                        backgroundImage: AssetImage(widget.post.userAvatar),
                         // replace with your avatar URL
                       ),
                       SizedBox(width: 10),
                       Text(
-                        post.name,
+                        widget.post.name,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
@@ -64,7 +160,7 @@ class PostCard extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              post.caption,
+              widget.post.caption,
               style: TextStyle(color: Colors.grey[700]),
             ),
             SizedBox(height: 10),

@@ -30,6 +30,7 @@ class PostService {
         'user_id': uid,
         'created_at': FieldValue.serverTimestamp(),
         'user_role': userRole,
+        'favorites': [],
       });
 
       await _firestore.collection('users').doc(uid).collection('posts').add({
@@ -204,9 +205,9 @@ class PostService {
         await _firestore
             .collection('users')
             .doc(_auth.currentUser!.uid)
-            .collection('favorites')
-            .add({'post_id': postId});
-        // increment favorites count in posts collection using arrayUnion
+            .update({
+          'favorites': FieldValue.arrayUnion([postId])
+        });
         await _firestore.collection('posts').doc(postId).update({
           'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
         });
@@ -219,22 +220,24 @@ class PostService {
   // users collection unfavorites posts
   Future<void> unfavoritePost(String postId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .collection('favorites')
-          .where('post_id', isEqualTo: postId)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
+      
         await _firestore
             .collection('users')
             .doc(_auth.currentUser!.uid)
-            .collection('favorites')
-            .doc(querySnapshot.docs.first.id)
-            .delete();
-      }
+            .update({
+        'favorites': FieldValue.arrayRemove([postId])
+      });
+      await _firestore.collection('posts').doc(postId).update({
+        'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
+      });
+      
     } on Exception catch (e) {
       throw e;
     }
+  }
+  
+  // get current user id
+  String getCurrentUserId() {
+    return _auth.currentUser!.uid;
   }
 }
