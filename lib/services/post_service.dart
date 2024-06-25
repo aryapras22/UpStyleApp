@@ -174,6 +174,22 @@ class PostService {
     }
   }
 
+  // get user posts by id
+  Future<QuerySnapshot<Post>> getUserPostsById(String userId) async {
+    try {
+      return await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('posts')
+          .withConverter(
+              fromFirestore: Post.fromFirestore,
+              toFirestore: (post, options) => post.toMap())
+          .get();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // search that post have certain genre on their text
   Future<List<DocumentSnapshot>> searchByGenre(String genre) async {
     try {

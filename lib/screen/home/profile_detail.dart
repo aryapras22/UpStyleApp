@@ -22,6 +22,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
   ChatService chatService = ChatService();
   AuthServices authServices = AuthServices();
   PostService postService = PostService();
+  bool isLoading = false;
 
   String name = '';
   types.User? otherUser;
@@ -36,6 +37,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
   }
 
   void createChat() async {
+    setState(() {
+      isLoading = true;
+    });
     types.Room room = await chatService.createChat(otherUser!, context);
     // route to chat page
     Navigator.push(
@@ -44,6 +48,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
         builder: (context) => ChatPage(room: room),
       ),
     );
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Widget statusBox(String status, String value, double width, double height) {
@@ -116,18 +123,23 @@ class _ProfileDetailState extends State<ProfileDetail> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: !isLoading
+                    ? () {
                   createChat();
-                },
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 238, 99, 56),
+                  backgroundColor: !isLoading
+                      ? const Color.fromARGB(255, 238, 99, 56)
+                      : Colors.grey,
                   minimumSize: Size(double.infinity, 50.0),
                   maximumSize: Size(double.infinity, 50.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Row(
+                child: !isLoading
+                    ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
@@ -138,15 +150,22 @@ class _ProfileDetailState extends State<ProfileDetail> {
                         size: 18.0,
                       ),
                     ),
-                    Text(
+                    
+                          Text(
                       "Chat to Order",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18.0,
+                            ),  
+                          )
+                        ],
+                      )
+                    : Center(
+                        child: const CircularProgressIndicator(
+                          color: Colors.white,
+                        
+                        ),
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
@@ -273,7 +292,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
               ),
             ),
             FutureBuilder(
-              future: _postService.getUserPosts(),
+              future: _postService.getUserPostsById(widget.userId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -295,6 +314,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                       for (var post in snapshot.data!.docs)
                         PostCard(
                           post: post.data(),
+                          isHome: false,
                         ),
                     ],
                   );

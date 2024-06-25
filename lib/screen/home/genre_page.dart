@@ -80,6 +80,7 @@ class _GenrePageState extends State<GenrePage> {
                     children: [
                       for (var post in posts)
                         PostCard(
+                          isHome: true,
                           post: post,
                         ),
                     ],

@@ -10,8 +10,10 @@ import 'package:upstyleapp/services/post_service.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
+  // final Function onTap;
+  final bool isHome;
 
-  PostCard({required this.post});
+  PostCard({required this.post, required this.isHome});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -38,8 +40,6 @@ class _PostCardState extends State<PostCard>
         curve: Curves.fastOutSlowIn,
       ),
     );
-
-// The scale of the icon could go from 80 to 120 here
     _scaleAnimation = Tween<double>(begin: 80, end: 120).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -49,13 +49,8 @@ class _PostCardState extends State<PostCard>
   }
 
   void _animate() {
-// Reset any existing animation state before proceeding
     _animationController.reset();
-
-// Animate, Magic!
     _animationController.forward();
-
-// We want to reverse the animation back to its original points after one second, since the like button does not stay on screen or need another action to be dismissed
     Future.delayed(const Duration(milliseconds: 1000), () {
       _animationController.reverse();
     });
@@ -121,14 +116,13 @@ class _PostCardState extends State<PostCard>
                 ),
               ]),
             ),
-            
-            SizedBox(height: 10),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // replace with your profile screen
 
+            SizedBox(height: 10),
+            widget.isHome
+                ? Row(
+              children: [
+                      GestureDetector(
+                        onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -150,19 +144,38 @@ class _PostCardState extends State<PostCard>
                       ),
                     ],
                   ),
-                ),
+                      ),
                 Spacer(),
                 Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
                   color: isFavorite ? Colors.red : Colors.grey,
                 ),
               ],
-            ),
+                  )
+                : Container(),
             SizedBox(height: 10),
-            Text(
+            widget.isHome
+                ? Text(
+                    widget.post.caption,
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Text(
               widget.post.caption,
-              style: TextStyle(color: Colors.grey[700]),
-            ),
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.grey,
+                      ),
+                    ],
+                  ),
             SizedBox(height: 10),
             // replace with your post image URL
           ],

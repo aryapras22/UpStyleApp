@@ -82,7 +82,9 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
         title: Row(
           children: [
             Text(
-              name == '' ? 'Username' : name,
+              name == ''
+                  ? 'Username'
+                  : (name.length > 15 ? '${name.substring(0, 15)}...' : name),
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
