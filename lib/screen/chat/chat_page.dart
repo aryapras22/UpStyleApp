@@ -52,6 +52,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
       postService.getUserData(value).then((value) {
         setState(() {
           name = value['name'];
+          
           imgUrl = value['imageUrl'];
           otherUserId = value.id;
         });
@@ -121,7 +122,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name == '' ? 'User' : name,
+                name == ''
+                    ? 'Username'
+                    : (name.length > 15 ? '${name.substring(0, 15)}...' : name),
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
