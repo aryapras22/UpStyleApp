@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/auth/edit_profile_screen.dart';
@@ -20,6 +18,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final authServices = AuthServices();
     final user = ref.watch(userProfileProvider);
+    final size = MediaQuery.of(context).size;
+    final padding = EdgeInsets.symmetric(
+      horizontal: size.width * 0.05,
+      vertical: size.height * 0.05,
+    );
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -29,12 +32,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.only(left: 16, top: 16, right: 16),
-        child: Column(
+        padding: padding,
+        child: ListView(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -51,7 +53,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Container(
                     width: 100,
                     height: 100,
-                    margin: const EdgeInsets.only(left: 16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
@@ -63,42 +64,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user.name,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Text(
-                        user.email,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.name,
+                          style: Theme.of(context).textTheme.titleLarge,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const EditProfileScreen(),
+                        Text(
+                          user.email,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                          );
-                        },
-                        child: const Text('Edit Profile'),
-                      ),
-                    ],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const EditProfileScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text('Edit Profile'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             ProfileOption(
               icon: Icons.filter,
               text: 'My Gallery',
