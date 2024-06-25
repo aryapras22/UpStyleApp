@@ -3,35 +3,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/model/user_model.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/chat/chat_page.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:upstyleapp/services/chat_service.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
-class ProfileDetail extends StatefulWidget {
+class ProfileDetail extends ConsumerStatefulWidget {
   final String userId;
 
   const ProfileDetail({super.key, required this.userId});
 
   @override
-  State<ProfileDetail> createState() => _ProfileDetailState();
+  ConsumerState<ProfileDetail> createState() => _ProfileDetailState();
 }
 
-class _ProfileDetailState extends State<ProfileDetail> {
+class _ProfileDetailState extends ConsumerState<ProfileDetail> {
   ChatService chatService = ChatService();
   AuthServices authServices = AuthServices();
   PostService postService = PostService();
   bool isLoading = false;
 
-  String name = '';
+  String otherName = '';
+  UserModel? user;
   types.User? otherUser;
+  String otherRole = '';
 
   void getUser() async {
     await postService.getUserData(widget.userId).then((value) {
       setState(() {
-        name = value['name'];
-        otherUser = types.User(id: widget.userId, firstName: name);
+        otherName = value['name'];
+        otherUser = types.User(id: widget.userId, firstName: otherName);
+        otherRole = value['role'];
       });
     });
   }
@@ -100,77 +106,83 @@ class _ProfileDetailState extends State<ProfileDetail> {
   @override
   Widget build(BuildContext context) {
     final PostService _postService = PostService();
-
+    user = ref.watch(userProfileProvider);
+    print('${user!.role} vs $otherRole');
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text('Profile Designer'),
         centerTitle: true,
       ),
-      bottomSheet: Row(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 20.0),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.file_upload_outlined,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              child: ElevatedButton(
-                onPressed: !isLoading
-                    ? () {
-                  createChat();
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: !isLoading
-                      ? const Color.fromARGB(255, 238, 99, 56)
-                      : Colors.grey,
-                  minimumSize: Size(double.infinity, 50.0),
-                  maximumSize: Size(double.infinity, 50.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+      bottomSheet: user!.role != otherRole
+          ? Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.file_upload_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
-                child: !isLoading
-                    ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 10.0),
-                      child: Icon(
-                        Icons.chat,
-                        color: Colors.white,
-                        size: 18.0,
-                      ),
-                    ),
-                    
-                          Text(
-                      "Chat to Order",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                            ),  
-                          )
-                        ],
-                      )
-                    : Center(
-                        child: const CircularProgressIndicator(
-                          color: Colors.white,
-                        
+                Expanded(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                    child: ElevatedButton(
+                      onPressed: !isLoading
+                          ? () {
+                              createChat();
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: !isLoading
+                            ? const Color.fromARGB(255, 238, 99, 56)
+                            : Colors.grey,
+                        minimumSize: Size(double.infinity, 50.0),
+                        maximumSize: Size(double.infinity, 50.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-              ),
-            ),
-          ),
-        ],
-      ),
+                      child: !isLoading
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 10.0),
+                                  child: Icon(
+                                    Icons.chat,
+                                    color: Colors.white,
+                                    size: 18.0,
+                                  ),
+                                ),
+                                Text(
+                                  "Chat to Order",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.0,
+                                  ),
+                                )
+                              ],
+                            )
+                          : Center(
+                              child: SizedBox(
+                                height: 20.0,
+                                width: 20.0,
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : null,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0),
         child: ListView(
@@ -211,7 +223,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                   ),
                   SizedBox(width: 10),
                   Text(
-                    name,
+                    otherName,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18.0,
@@ -316,6 +328,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                           post: post.data(),
                           isHome: false,
                         ),
+                      SizedBox(height: 50.0)
                     ],
                   );
                 }
