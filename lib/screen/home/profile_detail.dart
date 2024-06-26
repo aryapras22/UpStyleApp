@@ -107,7 +107,6 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
   Widget build(BuildContext context) {
     final PostService _postService = PostService();
     user = ref.watch(userProfileProvider);
-    print('${user!.role} vs $otherRole');
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
