@@ -540,7 +540,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                       children: [
                         for (var post in posts)
                           PostCard(
-                            isHome: true,
+                            isClickable: true,
                             post: post,
                           ),
                       ],

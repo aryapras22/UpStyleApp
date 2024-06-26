@@ -37,7 +37,7 @@ class FavoritesScreen extends StatelessWidget {
                 children: [
                   for (var post in snapshot.data!.docs)
                     PostCard(
-                      isHome: false,
+                      isClickable: true,
                       post: post.data(),
                     ),
                 ],

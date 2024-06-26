@@ -37,7 +37,7 @@ class Post with ChangeNotifier {
       caption: data.data()!['text'],
       time: data.data()!['created_at'].toString(),
       userId: FirebaseAuth.instance.currentUser!.uid,
-      favorites: data.data()!['favorites'] ?? [],
+      favorites: data.data()!['favorites'],
     );
   }
 
@@ -50,7 +50,7 @@ class Post with ChangeNotifier {
       caption: data['caption'],
       time: data['time'],
       userId: data['userId'],
-      favorites: data['favorites'] ?? [],
+      favorites: data['favorites'],
     );
   }
 

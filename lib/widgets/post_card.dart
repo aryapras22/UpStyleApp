@@ -8,9 +8,9 @@ import 'package:upstyleapp/services/post_service.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  final bool isHome;
+  final bool isClickable;
 
-  PostCard({required this.post, required this.isHome});
+  PostCard({required this.post, required this.isClickable});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -64,7 +64,6 @@ class _PostCardState extends State<PostCard>
   @override
   Widget build(BuildContext context) {
     isFavorite = widget.post.favorites.contains(postService.getCurrentUserId());
-    print(isFavorite);
     return Card(
       color: Colors.white,
       shadowColor: Theme.of(context).shadowColor,
@@ -115,18 +114,19 @@ class _PostCardState extends State<PostCard>
             ),
 
             SizedBox(height: 10),
-            widget.isHome
-                ? Row(
+            Row(
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                    widget.isClickable
+                        ? Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
                                   ProfileDetail(userId: widget.post.userId),
                             ),
-                          );
+                          )
+                        : null;
                         },
                         child: Row(
                           children: [
@@ -148,31 +148,7 @@ class _PostCardState extends State<PostCard>
                         isFavorite ? Icons.favorite : Icons.favorite_border,
                         color: isFavorite ? Colors.red : Colors.grey,
                       ),
-                    ],
-                  )
-                : Container(),
-            SizedBox(height: 10),
-            widget.isHome
-                ? Text(
-                    widget.post.caption,
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                    ),
-                  )
-                : Row(
-                    children: [
-                      Text(
-                        widget.post.caption,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      Spacer(),
-                      Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
-                      ),
-                    ],
+              ],
                   ),
             SizedBox(height: 10),
             // replace with your post image URL

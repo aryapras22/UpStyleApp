@@ -33,11 +33,17 @@ class PostService {
         'favorites': [],
       });
 
-      await _firestore.collection('users').doc(uid).collection('posts').add({
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('posts')
+          .doc(ref.id)
+          .set({
         'post_id': ref.id,
         'text': text,
         'image_url': url,
         'created_at': FieldValue.serverTimestamp(),
+        'favorites': [],
       });
     } catch (e) {
       rethrow;
@@ -224,6 +230,14 @@ class PostService {
             .update({
           'favorites': FieldValue.arrayUnion([postId])
         });
+        await _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .collection('posts')
+            .doc(postId)
+            .update({
+          'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
+        });
         await _firestore.collection('posts').doc(postId).update({
           'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
         });
@@ -238,6 +252,14 @@ class PostService {
     try {
       await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
         'favorites': FieldValue.arrayRemove([postId])
+      });
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('posts')
+          .doc(postId)
+          .update({
+        'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
       });
       await _firestore.collection('posts').doc(postId).update({
         'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])

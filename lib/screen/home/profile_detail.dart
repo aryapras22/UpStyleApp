@@ -324,7 +324,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                       for (var post in snapshot.data!.docs)
                         PostCard(
                           post: post.data(),
-                          isHome: false,
+                          isClickable: false,
                         ),
                       SizedBox(height: 50.0)
                     ],

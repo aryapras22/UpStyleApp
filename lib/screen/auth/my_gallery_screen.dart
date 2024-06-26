@@ -115,7 +115,7 @@ class MyGalleryScreen extends StatelessWidget {
                     children: [
                       for (var post in snapshot.data!.docs)
                         PostCard(
-                          isHome: false,
+                          isClickable: false,
                           post: post.data(),
                         ),
                     ],
