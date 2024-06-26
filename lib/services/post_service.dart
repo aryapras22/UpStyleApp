@@ -236,22 +236,31 @@ class PostService {
   // users collection unfavorites posts
   Future<void> unfavoritePost(String postId) async {
     try {
-      
-        await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
-            .update({
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
         'favorites': FieldValue.arrayRemove([postId])
       });
       await _firestore.collection('posts').doc(postId).update({
         'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
       });
-      
     } on Exception catch (e) {
       throw e;
     }
   }
-  
+
+  Future<QuerySnapshot<Post>> getFavorites() async {
+    try {
+      return await _firestore
+          .collection('posts')
+          .where('favorites', arrayContains: _auth.currentUser!.uid)
+          .withConverter(
+              fromFirestore: Post.fromFirestore,
+              toFirestore: (post, options) => post.toMap())
+          .get();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // get current user id
   String getCurrentUserId() {
     return _auth.currentUser!.uid;

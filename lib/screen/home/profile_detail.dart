@@ -105,7 +105,6 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final PostService _postService = PostService();
     user = ref.watch(userProfileProvider);
     print('${user!.role} vs $otherRole');
     return Scaffold(
@@ -304,7 +303,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
               ),
             ),
             FutureBuilder(
-              future: _postService.getUserPostsById(widget.userId),
+              future: postService.getUserPostsById(widget.userId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
