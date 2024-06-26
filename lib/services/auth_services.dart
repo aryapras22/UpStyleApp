@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:upstyleapp/screen/role_screen.dart';
 import 'package:upstyleapp/screen/auth_screen.dart';
 
 class AuthServices {
@@ -29,10 +28,7 @@ class AuthServices {
       if (user != null && !user.emailVerified) {
         await user.sendEmailVerification();
       }
-      if (user!.emailVerified) {}
-
-      if (user != null) {
-        // Save additional data to Firestore
+      if (user!.emailVerified) {
         await _firestore.collection('users').doc(user.uid).set({
           'email': email,
           'name': name,
@@ -84,7 +80,6 @@ class AuthServices {
   Future<void> logoutWithContext(BuildContext context) async {
     try {
       await _firebaseAuth.signOut();
-      await GoogleSignIn().signOut();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => AuthScreen()),
@@ -113,58 +108,6 @@ class AuthServices {
     } catch (e) {
       print('Error updating user profile: $e');
       rethrow;
-    }
-  }
-
-  //Google Sign In
-  Future<User?> signInWithGoogle(BuildContext context) async {
-    // Trigger the Google Sign In process
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    if (googleUser == null) {
-      throw FirebaseAuthException(
-        code: 'ERROR_ABORTED_BY_USER',
-        message: 'Sign in aborted by user',
-      );
-    }
-
-    // Obtain the GoogleSignInAuthentication object
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    // Create a new credential
-    final googleCredential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // Sign in to Firebase with the Google Auth credential
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(googleCredential);
-
-    final User? user = userCredential.user;
-
-    if (user != null) {
-      await checkAndCreateUser(user, context);
-    }
-
-    return user;
-  }
-
-  Future<void> checkAndCreateUser(User user, BuildContext context) async {
-    final userDoc = await _firestore.collection('users').doc(user.uid).get();
-    if (!userDoc.exists) {
-      await _firestore.collection('users').doc(user.uid).set({
-        'uid': user.uid,
-        'email': user.email,
-        'role': '', // Atur default role kosong di sini
-      });
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const RoleScreen(),
-        ),
-      );
     }
   }
 }
