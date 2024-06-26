@@ -295,8 +295,8 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
 
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
-      name = value['name'];
-      avatar = value['imageUrl'];
+      name = value['name'] ?? 'Anonymous';
+      avatar = value['imageUrl'] ?? '';
       posts.add(
         Post(
           id: doc.id,
