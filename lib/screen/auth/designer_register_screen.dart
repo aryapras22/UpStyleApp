@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:upstyleapp/screen/auth_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
-import 'package:upstyleapp/screen/dashboard_screen.dart';
 
 class DesignerRegisterScreen extends StatefulWidget {
   const DesignerRegisterScreen({super.key});
@@ -52,7 +52,7 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>  DashboardScreen(),
+          builder: (context) => AuthScreen(),
         ),
       );
       timer?.cancel();
@@ -77,8 +77,7 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
     });
   }
 
-
-Future<void> _register() async {
+  Future<void> _register() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -90,27 +89,27 @@ Future<void> _register() async {
         name: _nameController.text,
         role: 'designer',
       );
-      
+
       if (isEmailVerified) {
         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>  DashboardScreen(),
-        ),
-      );
+          context,
+          MaterialPageRoute(
+            builder: (context) => AuthScreen(),
+          ),
+        );
       } else {
         // loading pop up center waiting to verify email
         setState(() {
           isLoading = true;
         });
       }
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
