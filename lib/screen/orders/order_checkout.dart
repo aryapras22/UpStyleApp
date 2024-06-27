@@ -1,17 +1,23 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/model/order.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/orders/order_payment.dart';
 import 'package:upstyleapp/services/order_service.dart';
+import 'package:http/http.dart' as http;
 
-class OrderCheckout extends StatefulWidget {
+class OrderCheckout extends ConsumerStatefulWidget {
   const OrderCheckout({super.key, required this.orderId});
   final String orderId;
 
   @override
-  State<OrderCheckout> createState() => _OrderCheckoutState();
+  ConsumerState<OrderCheckout> createState() => _OrderCheckoutState();
 }
 
-class _OrderCheckoutState extends State<OrderCheckout> {
+class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
   bool _isLoading = true;
   final OrderService _orderService = OrderService();
   late OrderModel _order;
@@ -39,8 +45,11 @@ class _OrderCheckoutState extends State<OrderCheckout> {
   @override
   void initState() {
     _fetchOrderData();
+
     super.initState();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -214,12 +223,21 @@ class _OrderCheckoutState extends State<OrderCheckout> {
                   ),
                   const Spacer(),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                   OrderPayment(order: _order)));
+                    onPressed: () async {
+                      final user = ref.watch(userProfileProvider);
+                      var url =
+                          'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
+                      var body = {
+                        'orderId': _order.orderId,
+                        'amount': (int.parse(_order.price) + tax).toString(),
+                        'name': user.name,
+                        'phone': user.phone ?? "",
+                        'email': user.email,
+                      };
+
+                      var response =
+                          await http.post(Uri.parse(url), body: body);
+                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 238, 99, 56),

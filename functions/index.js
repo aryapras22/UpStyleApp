@@ -58,7 +58,12 @@ exports.midtransPaymentRequest = functions.https.onRequest(async (req, res) => {
     const transaction = await snap.createTransaction(parameter);
     const transactionToken = transaction.token;
     logger.info("Transaction Token:", {transactionToken});
-    res.status(200).send({transactionToken});
+    res
+        .status(200)
+        .send({
+          transactionToken: transactionToken,
+          redirectUrl: transaction.redirect_url,
+        });
   } catch (error) {
     logger.error("Error creating transaction:", {error});
     res.status(500).send({error: "Error creating transaction"});
