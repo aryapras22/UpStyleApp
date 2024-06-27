@@ -31,7 +31,6 @@ class _OrderCheckoutState extends State<OrderCheckout> {
         status: getStatusFromString(orderData['status']),
         date: DateTime.parse(orderData['date']),
       );
-
       tax = (int.parse(_order.price) * 1 ~/ 100);
       _isLoading = false;
     });
