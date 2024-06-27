@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/model/order.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/orders/order_payment.dart';
+import 'package:upstyleapp/screen/snap/snap_web_view_screen.dart';
 import 'package:upstyleapp/services/order_service.dart';
 import 'package:http/http.dart' as http;
 
@@ -48,8 +49,6 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
 
     super.initState();
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -228,16 +227,20 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                       var url =
                           'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
                       var body = {
-                        'orderId': _order.orderId,
+                        'orderId': "abcdef",
                         'amount': (int.parse(_order.price) + tax).toString(),
                         'name': user.name,
                         'phone': user.phone ?? "",
                         'email': user.email,
                       };
-
                       var response =
                           await http.post(Uri.parse(url), body: body);
-                      
+                      var transaction = jsonDecode(response.body);
+                      print(transaction);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SnapWebViewScreen(
+                                url: transaction['redirectUrl'],
+                              )));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 238, 99, 56),

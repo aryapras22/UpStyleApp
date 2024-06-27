@@ -29,6 +29,7 @@ const snap = new midtransClient.Snap({
   // Set to true if you want Production Environment (accept real transaction).
   isProduction: false,
   serverKey: "SB-Mid-server-qzhJH-QZp_c49H12g0hMpS0I",
+  clientKey: "SB-Mid-client-U9WbOyKZqSH2Zqjr",
 });
 
 // Export midtransPaymentRequest function
@@ -58,12 +59,10 @@ exports.midtransPaymentRequest = functions.https.onRequest(async (req, res) => {
     const transaction = await snap.createTransaction(parameter);
     const transactionToken = transaction.token;
     logger.info("Transaction Token:", {transactionToken});
-    res
-        .status(200)
-        .send({
-          transactionToken: transactionToken,
-          redirectUrl: transaction.redirect_url,
-        });
+    res.status(200).send({
+      transactionToken: transactionToken,
+      redirectUrl: transaction.redirect_url,
+    });
   } catch (error) {
     logger.error("Error creating transaction:", {error});
     res.status(500).send({error: "Error creating transaction"});

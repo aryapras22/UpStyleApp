@@ -56,6 +56,7 @@ dependencies:
   cloud_functions: ^4.7.6
 
   http: ^1.2.1
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:
