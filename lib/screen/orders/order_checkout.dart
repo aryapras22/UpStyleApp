@@ -227,7 +227,7 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                       var url =
                           'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
                       var body = {
-                        'orderId': "abcdef",
+                        'orderId': _order.orderId,
                         'amount': (int.parse(_order.price) + tax).toString(),
                         'name': user.name,
                         'phone': user.phone ?? "",
