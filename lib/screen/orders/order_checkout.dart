@@ -232,6 +232,9 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                       : ElevatedButton(
                           onPressed: () async {
                             if (!_checkoutLoading) {
+                              setState(() {
+                                _checkoutLoading = true;
+                              });
                               final user = ref.watch(userProfileProvider);
                               var url =
                                   'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
@@ -265,6 +268,9 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                                   ),
                                 );
                               }
+                              setState(() {
+                                _checkoutLoading = false;
+                              });
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -276,7 +282,11 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                             ),
                           ),
                           child: _checkoutLoading
-                              ? Center(child: CircularProgressIndicator())
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ))
                               : const Text(
                                   "Checkout",
                                   style: TextStyle(

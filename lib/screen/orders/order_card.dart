@@ -75,7 +75,8 @@ class _OrderCardState extends ConsumerState<OrderCard> {
     if (_userData.role == 'designer') {
       _designer = true;
     }
-    final _roomId = ChatService().getRoomId(widget.order.designerId, widget.order.customerId);
+    final _roomId = ChatService()
+        .getRoomId(widget.order.designerId, widget.order.customerId);
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -141,7 +142,9 @@ class _OrderCardState extends ConsumerState<OrderCard> {
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(
+                    width: 12,
+                  ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
