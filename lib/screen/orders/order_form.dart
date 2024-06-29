@@ -228,7 +228,7 @@ class _OrderFormState extends State<OrderForm> {
               GestureDetector(
                 onTap: () async {
                   final pickedImage = await _picker.pickImage(
-                      source: ImageSource.camera, imageQuality: 80);
+                      source: ImageSource.gallery, imageQuality: 80);
                   setState(() {
                     if (pickedImage != null) {
                       _image = File(pickedImage.path);

@@ -23,6 +23,7 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
   bool _isLoading = true;
   final OrderService _orderService = OrderService();
   int tax = 0;
+  bool _checkoutLoading = false;
 
   @override
   void initState() {
@@ -230,35 +231,40 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                       ? const SizedBox()
                       : ElevatedButton(
                           onPressed: () async {
-                            final user = ref.watch(userProfileProvider);
-                            var url =
-                                'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
-                            var body = {
-                              'orderId': _order.orderId,
-                              'amount':
-                                  (int.parse(_order.price) + tax).toString(),
-                              'name': user.name,
-                              'phone': user.phone ?? "",
-                              'email': user.email,
-                            };
-                            if (_order.paymentUrl.trim() != "" &&
-                                _order.paymentToken.trim() != "") {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => SnapWebViewScreen(
-                                    url: _order.paymentUrl,
+                            if (!_checkoutLoading) {
+                              final user = ref.watch(userProfileProvider);
+                              var url =
+                                  'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
+                              var body = {
+                                'orderId': _order.orderId,
+                                'amount':
+                                    (int.parse(_order.price) + tax).toString(),
+                                'name': user.name,
+                                'phone': user.phone ?? "",
+                                'email': user.email,
+                              };
+                              if (_order.paymentUrl.trim() != "" &&
+                                  _order.paymentToken.trim() != "") {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SnapWebViewScreen(
+                                      url: _order.paymentUrl,
+                                    ),
                                   ),
-                                ),
-                              );
-                            } else {
-                              var response =
-                                  await http.post(Uri.parse(url), body: body);
-                              var transaction = jsonDecode(response.body);
-                              print(transaction);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => SnapWebViewScreen(
-                                        url: transaction['redirectUrl'],
-                                      )));
+                                );
+                              } else {
+                                var response =
+                                    await http.post(Uri.parse(url), body: body);
+                                var transaction = jsonDecode(response.body);
+                                print(transaction);
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SnapWebViewScreen(
+                                      url: transaction['redirectUrl'],
+                                    ),
+                                  ),
+                                );
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -269,13 +275,15 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text(
-                            "Checkout",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
+                          child: _checkoutLoading
+                              ? Center(child: CircularProgressIndicator())
+                              : const Text(
+                                  "Checkout",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
                         ),
                 ],
               ),
