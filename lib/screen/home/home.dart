@@ -29,9 +29,11 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
   @override
   void initState() {
     _postService.getUserRole().then((value) {
-      setState(() {
-        userRole = value;
-      });
+      if (mounted) {
+        setState(() {
+          userRole = value;
+        });
+      }
     });
     _filterController = TabController(length: filters.length, vsync: this);
     _fetchData();
@@ -42,6 +44,8 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
   void dispose() {
     _captionController.dispose();
     _filterController.dispose();
+    _refreshController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -315,6 +319,18 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
     });
   }
 
+  // closure fix
+  void _fetchDataClosure(int index) async {
+    setState(() {
+      isLoading = true;
+      posts.clear();
+    });
+    await _fetchData();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SmartRefresher(
@@ -493,16 +509,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                       color: Theme.of(context).colorScheme.surface,
                     ),
                     child: TabBar(
-                      onTap: (index) async {
-                        setState(() {
-                          isLoading = true;
-                          posts.clear();
-                        });
-                        await _fetchData();
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
+                      onTap: _fetchDataClosure,
                       controller: _filterController,
                       tabAlignment: TabAlignment.start,
                       isScrollable: true,
