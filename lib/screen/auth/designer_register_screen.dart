@@ -89,6 +89,10 @@ class _DesignerRegisterScreenState extends State<DesignerRegisterScreen> {
       setState(() {
         isLoading = false;
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
