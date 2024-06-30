@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
 import 'package:upstyleapp/screen/welcome_screen.dart';
+import 'package:upstyleapp/screen/auth/verification_screen.dart';
 
 class AuthScreen extends ConsumerWidget {
   AuthScreen({super.key});
@@ -23,27 +24,31 @@ class AuthScreen extends ConsumerWidget {
             // User not logged in, send them to LoginScreen
             return const WelcomeScreen();
           } else {
-            // User is logged in, get user data from Firestore and update state
-            final userCredential = snapshot.data;
-            FirebaseFirestore.instance
-                .collection('users')
-                .doc(userCredential!.uid)
-                .get()
-                .then((userData) {
-              if (userData.exists) {
-                final data = userData.data()!;
-                ref.watch(userProfileProvider.notifier).setUser(
-                      name: data['name'],
-                      email: data['email'],
-                      role: data['role'],
-                      phone: data['phone'],
-                      address: data['address'],
-                      imageUrl: data['imageUrl'],
-                    );
-              }
-            });
-            // User is logged in, send them to DashboardScreen
-            return  DashboardScreen();
+            if (user.emailVerified) {
+              // User is logged in, get user data from Firestore and update state
+              final userCredential = snapshot.data;
+              FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userCredential!.uid)
+                  .get()
+                  .then((userData) {
+                if (userData.exists) {
+                  final data = userData.data()!;
+                  ref.watch(userProfileProvider.notifier).setUser(
+                        name: data['name'],
+                        email: data['email'],
+                        role: data['role'],
+                        phone: data['phone'],
+                        address: data['address'],
+                        imageUrl: data['imageUrl'],
+                      );
+                }
+              });
+              // User is logged in, send them to DashboardScreen
+              return DashboardScreen();
+            }
+            // User is logged in but email is not verified, send them to VerificationScreen
+            return const VerificationScreen();
           }
         }
         // While connection state is not active, show loading spinner

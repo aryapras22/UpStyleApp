@@ -1,11 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:upstyleapp/screen/auth_screen.dart';
-import 'package:upstyleapp/screen/dashboard_screen.dart';
+import 'package:upstyleapp/screen/auth/verification_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 
 class CustomerRegisterScreen extends StatefulWidget {
@@ -25,44 +23,14 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
   bool _obscureTextPassword = true;
   bool _obscureTextConfirmPassword = true;
 
-  bool isEmailVerified = false;
-  Timer? timer;
   bool isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
-    FirebaseAuth.instance.currentUser?.sendEmailVerification();
-    timer =
-        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
-  }
-
-  checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser?.reload();
-
-    setState(() {
-      isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
-    });
-
-    if (isEmailVerified) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Email Successfully Verified")));
-      setState(() {
-        isLoading = false;
-      });
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DashboardScreen(),
-        ),
-      );
-      timer?.cancel();
-    }
-  }
-
-  @override
   void dispose() {
-    timer?.cancel();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -83,61 +51,74 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
       return;
     }
 
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       await _authServices.register(
         email: _emailController.text,
         password: _passwordController.text,
         name: _nameController.text,
-        role: 'customer',
       );
 
-      if (isEmailVerified) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AuthScreen(),
-          ),
-        );
-      } else {
-        // loading pop up center waiting to verify email
-        setState(() {
-          isLoading = true;
-        });
-      }
+      // Hapus akun jika dalam 30 menit tidak memverifikasi email
+      Timer(const Duration(minutes: 30), () async {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null && !user.emailVerified) {
+          await user.delete();
+        }
+      });
+
+      final user = FirebaseAuth.instance.currentUser;
+      await _authServices.addUserToFirestore(
+          email: user!.email!,
+          uid: user.uid,
+          name: _nameController.text,
+          role: 'customer');
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const VerificationScreen(),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          content: Text('Error registering user: $e'),
+        ),
+      );
+
+      setState(() {
+        isLoading = false;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _createUserCollection(User user) async {
+    try {
+      await _authServices.addUserToFirestore(
+        uid: user.uid,
+        email: user.email!,
+        name: _nameController.text,
+        role: 'customer',
+      );
+    } catch (e) {
+      print('Error adding user to Firestore: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding user to Firestore: $e'),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Text("Check your email to verify your account"),
-              ),
-              // route back to register page
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Back to Register"),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -344,23 +325,30 @@ class _CustomerRegisterScreenState extends State<CustomerRegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _register,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 238, 99, 56),
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Register',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+              isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.orange),
+                      ),
+                    )
+                  : ElevatedButton(
+                      onPressed: _register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 238, 99, 56),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
