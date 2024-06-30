@@ -396,7 +396,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                         padding: const EdgeInsets.symmetric(horizontal: 40.0),
                         child: Center(
                           child: Text(
-                            'From drab to fab, #StyleLagi your outfits everyday',
+                            'Let’s go start your upcycling journey with us!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
@@ -412,7 +412,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                           _showUploadDialog(context);
                         },
                         icon: Image.asset('assets/icons/upload.png'),
-                        label: Text('Upload your clothes',
+                        label: Text('Get Your Designer',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w400,
@@ -439,7 +439,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                         focusColor: Colors.white,
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'Search your styles...',
+                        hintText: 'Spot Your Designer',
                         prefixIcon: Icon(
                           Icons.search,
                           color: Theme.of(context).colorScheme.tertiary,

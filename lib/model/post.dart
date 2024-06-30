@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:upstyleapp/services/post_service.dart';
 
 class Post with ChangeNotifier {
   final String id;
@@ -24,6 +25,7 @@ class Post with ChangeNotifier {
     required this.userId,
     this.favorites = const [],
   });
+  PostService postService = PostService();
 
   factory Post.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> data,

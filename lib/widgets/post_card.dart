@@ -80,7 +80,6 @@ class _PostCardState extends State<PostCard>
                   setState(() {
                     isFavorite = false;
                   });
-                  // remove from favorites lists
                   widget.post.favorites.remove(postService.getCurrentUserId());
                   postService.unfavoritePost(widget.post.id);
                 } else if (!isFavorite) {
@@ -115,41 +114,40 @@ class _PostCardState extends State<PostCard>
 
             SizedBox(height: 10),
             Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                    widget.isClickable
-                        ? Navigator.push(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (widget.isClickable) {
+                      Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
                                   ProfileDetail(userId: widget.post.userId),
-                            ),
-                          )
-                        : null;
-                        },
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage:
-                                  AssetImage(widget.post.userAvatar),
-                              // replace with your avatar URL
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              widget.post.name,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
                         ),
+                      );
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(widget.post.userAvatar),
+                        // replace with your avatar URL
                       ),
-                      Spacer(),
-                      Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
+                      SizedBox(width: 10),
+                      Text(
+                        widget.post.name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-              ],
+                    ],
                   ),
+                ),
+                Spacer(),
+                Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                ),
+              ],
+            ),
             SizedBox(height: 10),
             // replace with your post image URL
           ],

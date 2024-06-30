@@ -141,4 +141,16 @@ class OrderService {
       rethrow;
     }
   }
+
+  // get order status by id
+  Future<String> getOrderStatus(String id) async {
+    try {
+      var queryDocumentSnapshot =
+          await FirebaseFirestore.instance.collection('orders').doc(id).get();
+      var data = queryDocumentSnapshot.data() ?? {};
+      return data['status'];
+    } catch (error) {
+      rethrow;
+    }
+  }
 }

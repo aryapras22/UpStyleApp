@@ -231,8 +231,6 @@ class PostService {
           'favorites': FieldValue.arrayUnion([postId])
         });
         await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
             .collection('posts')
             .doc(postId)
             .update({

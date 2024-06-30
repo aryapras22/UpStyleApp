@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
+                'From drab to fab, #StyleLagi your everyday outfit',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color.fromARGB(255, 150, 150, 150),
