@@ -62,6 +62,22 @@ class ChatService {
     uri: 'image',
     size: 0,
   );
+  Future<String> getRoomId(desId, custId) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection("chatRooms")
+          .where("designerId", isEqualTo: desId)
+          .where("custId", isEqualTo: custId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      }
+      return "";
+    } catch (e) {
+      return e.toString();
+    }
+  }
 
   // upload image
 

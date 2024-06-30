@@ -1,45 +1,32 @@
-import 'package:flutter/material.dart';
-import 'package:upstyleapp/model/order.dart';
-import 'package:upstyleapp/screen/orders/order_payment.dart';
-import 'package:upstyleapp/services/order_service.dart';
+import 'dart:convert';
+import 'dart:math';
 
-class OrderCheckout extends StatefulWidget {
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/model/order.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
+import 'package:upstyleapp/screen/orders/order_payment.dart';
+import 'package:upstyleapp/screen/snap/snap_web_view_screen.dart';
+import 'package:upstyleapp/services/order_service.dart';
+import 'package:http/http.dart' as http;
+
+class OrderCheckout extends ConsumerStatefulWidget {
   const OrderCheckout({super.key, required this.orderId});
   final String orderId;
 
   @override
-  State<OrderCheckout> createState() => _OrderCheckoutState();
+  ConsumerState<OrderCheckout> createState() => _OrderCheckoutState();
 }
 
-class _OrderCheckoutState extends State<OrderCheckout> {
+class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
   bool _isLoading = true;
   final OrderService _orderService = OrderService();
-  late OrderModel _order;
   int tax = 0;
-
-  Future<void> _fetchOrderData() async {
-    final orderData = await _orderService.getOrderById(widget.orderId);
-    setState(() {
-      _order = OrderModel(
-        orderId: orderData['id'],
-        designerId: orderData['designerId'],
-        customerId: orderData['custId'],
-        imageUrl: orderData['image_url'],
-        price: orderData['price'],
-        title: orderData['title'],
-        orderDetail: orderData['orderDetail'],
-        status: getStatusFromString(orderData['status']),
-        date: DateTime.parse(orderData['date']),
-      );
-
-      tax = (int.parse(_order.price) * 1 ~/ 100);
-      _isLoading = false;
-    });
-  }
+  bool _checkoutLoading = false;
 
   @override
   void initState() {
-    _fetchOrderData();
     super.initState();
   }
 
@@ -51,17 +38,43 @@ class _OrderCheckoutState extends State<OrderCheckout> {
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
         title: Text(
-          'Checkout',
+          'Order Details',
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onSurface, fontSize: 18),
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Padding(
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('orders')
+              .doc(widget.orderId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (!snapshot.hasData) {
+              return Center(
+                child: Text('no data'),
+              );
+            }
+            OrderModel _order = OrderModel(
+              orderId: snapshot.data!.id,
+              designerId: snapshot.data!['designerId'],
+              customerId: snapshot.data!['custId'],
+              imageUrl: snapshot.data!['image_url'],
+              price: snapshot.data!['price'],
+              title: snapshot.data!['title'],
+              orderDetail: snapshot.data!['orderDetail'],
+              status: getStatusFromString(snapshot.data!['status']),
+              date: DateTime.parse(snapshot.data!['date']),
+              paymentUrl: snapshot.data!['payment_url'],
+              paymentToken: snapshot.data!['payment_token'],
+            );
+            tax = (int.parse(_order.price) * 1 ~/ 100);
+            return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,32 +227,78 @@ class _OrderCheckoutState extends State<OrderCheckout> {
                     ),
                   ),
                   const Spacer(),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                   OrderPayment(order: _order)));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 238, 99, 56),
-                      minimumSize: const Size(double.infinity, 48),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      "Checkout",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
+                  _order.status != OrderStatus.waiting
+                      ? const SizedBox()
+                      : ElevatedButton(
+                          onPressed: () async {
+                            if (!_checkoutLoading) {
+                              setState(() {
+                                _checkoutLoading = true;
+                              });
+                              final user = ref.watch(userProfileProvider);
+                              var url =
+                                  'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
+                              var body = {
+                                'orderId': _order.orderId,
+                                'amount':
+                                    (int.parse(_order.price) + tax).toString(),
+                                'name': user.name,
+                                'phone': user.phone ?? "",
+                                'email': user.email,
+                              };
+                              if (_order.paymentUrl.trim() != "" &&
+                                  _order.paymentToken.trim() != "") {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SnapWebViewScreen(
+                                      url: _order.paymentUrl,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                var response =
+                                    await http.post(Uri.parse(url), body: body);
+                                var transaction = jsonDecode(response.body);
+                                print(transaction);
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SnapWebViewScreen(
+                                      url: transaction['redirectUrl'],
+                                    ),
+                                  ),
+                                );
+                              }
+                              setState(() {
+                                _checkoutLoading = false;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 238, 99, 56),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: _checkoutLoading
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                  color:
+                                      Theme.of(context).colorScheme.background,
+                                ))
+                              : const Text(
+                                  "Checkout",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                        ),
                 ],
               ),
-            ),
+            );
+          }),
     );
   }
 }

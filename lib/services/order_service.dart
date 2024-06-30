@@ -18,7 +18,7 @@ class OrderService {
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('order_images')
-          .child("$order.orderId.jpg");
+          .child("${order.orderId}.jpg");
       await storageRef.putFile(File(order.imageUrl));
       final imageUrl = await storageRef.getDownloadURL();
       await FirebaseFirestore.instance
@@ -34,7 +34,9 @@ class OrderService {
           'image_url': imageUrl,
           'date': order.date.toString(),
           'status': order.status.name,
-          'paymentMethod': ""
+          'paymentMethod': "",
+          'payment_url': order.paymentUrl,
+          'payment_token': order.paymentToken,
         },
       );
       chatService.sendOrderMessage(
@@ -88,12 +90,46 @@ class OrderService {
     }
   }
 
+  Future<List<QueryDocumentSnapshot>> getAllDesOrder(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('orders')
+          .where('designerId', isEqualTo: userId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<QueryDocumentSnapshot>> getFilteredCustOrder(
       String userId, String status) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('orders')
           .where('custId', isEqualTo: userId)
+          .where('status', isEqualTo: status)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<QueryDocumentSnapshot>> getFilteredDesOrder(
+      String userId, String status) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('orders')
+          .where('designerId', isEqualTo: userId)
           .where('status', isEqualTo: status)
           .get();
       if (querySnapshot.docs.isNotEmpty) {

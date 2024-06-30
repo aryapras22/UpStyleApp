@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
@@ -8,7 +10,6 @@ class MyGalleryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PostService postService = PostService();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Gallery'),
@@ -32,17 +33,22 @@ class MyGalleryScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 15.0),
-              child: Center(
-                child: Text(
-                  "Ali Ahmad Fahrezy",
-                  style: TextStyle(
-                    fontFamily: "ProductSansMedium",
-                    fontSize: 20.0,
+            Consumer(
+              builder: (context, ref, child) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: Center(
+                    child: Text(
+                      ref.watch(userProfileProvider).name,
+                      style: const TextStyle(
+                        fontFamily: "ProductSansMedium",
+                        fontSize: 20.0,
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 15.0),
@@ -56,7 +62,7 @@ class MyGalleryScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {},
-                child: const Text('Edit Profile'),
+                child: const Text('Edit Description'),
               ),
             ),
             Padding(
@@ -109,7 +115,7 @@ class MyGalleryScreen extends StatelessWidget {
                     children: [
                       for (var post in snapshot.data!.docs)
                         PostCard(
-                          isHome: false,
+                          isClickable: false,
                           post: post.data(),
                         ),
                     ],

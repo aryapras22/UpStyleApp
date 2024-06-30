@@ -33,11 +33,17 @@ class PostService {
         'favorites': [],
       });
 
-      await _firestore.collection('users').doc(uid).collection('posts').add({
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('posts')
+          .doc(ref.id)
+          .set({
         'post_id': ref.id,
         'text': text,
         'image_url': url,
         'created_at': FieldValue.serverTimestamp(),
+        'favorites': [],
       });
     } catch (e) {
       rethrow;
@@ -224,6 +230,14 @@ class PostService {
             .update({
           'favorites': FieldValue.arrayUnion([postId])
         });
+        await _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .collection('posts')
+            .doc(postId)
+            .update({
+          'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
+        });
         await _firestore.collection('posts').doc(postId).update({
           'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
         });
@@ -236,22 +250,39 @@ class PostService {
   // users collection unfavorites posts
   Future<void> unfavoritePost(String postId) async {
     try {
-      
-        await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
-            .update({
+      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
         'favorites': FieldValue.arrayRemove([postId])
+      });
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('posts')
+          .doc(postId)
+          .update({
+        'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
       });
       await _firestore.collection('posts').doc(postId).update({
         'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
       });
-      
     } on Exception catch (e) {
       throw e;
     }
   }
-  
+
+  Future<QuerySnapshot<Post>> getFavorites() async {
+    try {
+      return await _firestore
+          .collection('posts')
+          .where('favorites', arrayContains: _auth.currentUser!.uid)
+          .withConverter(
+              fromFirestore: Post.fromFirestore,
+              toFirestore: (post, options) => post.toMap())
+          .get();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // get current user id
   String getCurrentUserId() {
     return _auth.currentUser!.uid;

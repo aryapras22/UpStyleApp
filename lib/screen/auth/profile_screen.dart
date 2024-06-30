@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/auth/edit_profile_screen.dart';
+import 'package:upstyleapp/screen/auth/favorites_screen.dart';
 import 'package:upstyleapp/screen/auth/my_gallery_screen.dart';
 import 'package:upstyleapp/services/auth_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -118,7 +119,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ProfileOption(
               icon: Icons.favorite_border,
               text: 'Favorites',
-              onTap: () {},
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              ),
             ),
             ProfileOption(
               icon: Icons.notifications_outlined,
