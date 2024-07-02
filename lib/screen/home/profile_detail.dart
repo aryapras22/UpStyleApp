@@ -230,6 +230,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ),
               ),
             ),
+            /*
             Padding(
               padding: EdgeInsets.only(top: 30.0),
               child: Row(
@@ -241,6 +242,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
+            */
             Padding(
               padding: EdgeInsets.only(top: 30.0),
               child: Row(
@@ -262,6 +264,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
+            /*
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
@@ -307,6 +310,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
+            */
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
