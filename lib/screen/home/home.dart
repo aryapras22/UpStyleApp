@@ -46,6 +46,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
     _filterController.dispose();
     _refreshController.dispose();
     _searchController.dispose();
+    
     super.dispose();
   }
 

@@ -16,9 +16,13 @@ class _GenrePageState extends State<GenrePage> {
   bool isLoading = true;
   final _postService = PostService();
   List<Post> posts = [];
-
+  List<Post> searchPosts = [];
+  
   void fetchPosts() async {
-    var allPost = await _postService.searchByGenre(widget.genre);
+    setState(() {
+      posts.clear();
+    });
+    var allPost = await _postService.searchPosts(widget.genre.toLowerCase());
     if (allPost.isEmpty) {
       setState(() {
         isLoading = false;
@@ -30,8 +34,8 @@ class _GenrePageState extends State<GenrePage> {
 
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
-      name = value['name'];
-      avatar = value['imageUrl'];
+      name = value['name'] ?? 'Anonymous';
+      avatar = value['imageUrl'] ?? '';
       posts.add(
         Post(
           id: doc.id,
@@ -41,9 +45,12 @@ class _GenrePageState extends State<GenrePage> {
           caption: doc['text'],
           time: doc['created_at'].toString(),
           userId: doc['user_id'],
+          favorites: doc['favorites'],
         ),
       );
     }
+
+
     setState(() {
       isLoading = false;
     });
@@ -51,10 +58,8 @@ class _GenrePageState extends State<GenrePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
-    super.initState();
     fetchPosts();
+    super.initState();
   }
 
   @override

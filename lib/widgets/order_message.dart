@@ -30,10 +30,15 @@ class _OrderMessageState extends ConsumerState<OrderMessage> {
   // get order status
   void getOrderStatus(String orderId) async {
     try {
-      var data = await orderService.getOrderById(orderId);
-      setState(() {
-        status = data['status'];
-      });
+      await orderService.getOrderById(orderId).then(
+        (value) {
+          if (mounted) {
+            setState(() {
+              status = value['status'];
+            });
+          }
+        },
+      );
     } catch (error) {
       rethrow;
     }
@@ -44,6 +49,12 @@ class _OrderMessageState extends ConsumerState<OrderMessage> {
     getOrderStatus(widget.orderId);
     super.initState();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  
 
   @override
   Widget build(BuildContext context) {

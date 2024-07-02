@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Post with ChangeNotifier {
@@ -20,4 +21,18 @@ class Post with ChangeNotifier {
     required this.userId,
     this.favorites = const [],
   });
+
+  static fromDocument(DocumentSnapshot<Object?> doc) {
+    return Post(
+      id: doc['id'],
+      name: doc['name'],
+      userAvatar: doc['userAvatar'],
+      postImage: doc['postImage'],
+      caption: doc['caption'],
+      time: doc['time'],
+      userId: doc['userId'],
+      favorites: doc['favorites'],
+    );
+  }
+
 }

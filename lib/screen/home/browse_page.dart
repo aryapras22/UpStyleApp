@@ -28,7 +28,7 @@ class BrowsePage extends StatelessWidget {
               color: Colors.blue,
             ),
             BrowseCard(
-              title: 'Dark Academia',
+              title: 'Monokrom',
               imagePath: 'assets/images/live_events.png',
               color: Colors.brown,
             ),
@@ -38,12 +38,27 @@ class BrowsePage extends StatelessWidget {
               color: Colors.black,
             ),
             BrowseCard(
-              title: 'New Releases',
+              title: "90's",
               imagePath: 'assets/new_releases.png',
               color: Colors.red,
             ),
             BrowseCard(
-              title: 'Ramadan',
+              title: 'Earth Tone',
+              imagePath: 'assets/ramadan.png',
+              color: Colors.teal,
+            ),
+            BrowseCard(
+              title: 'y2k',
+              imagePath: 'assets/made_for_you.png',
+              color: Colors.black,
+            ),
+            BrowseCard(
+              title: "Sporty",
+              imagePath: 'assets/new_releases.png',
+              color: Colors.red,
+            ),
+            BrowseCard(
+              title: 'Colorful',
               imagePath: 'assets/ramadan.png',
               color: Colors.teal,
             ),
