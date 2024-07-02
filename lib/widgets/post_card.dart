@@ -119,10 +119,10 @@ class _PostCardState extends State<PostCard>
                   onTap: () {
                     if (widget.isClickable) {
                       Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileDetail(userId: widget.post.userId),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileDetail(userId: widget.post.userId),
                         ),
                       );
                     }
