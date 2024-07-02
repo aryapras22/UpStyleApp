@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:upstyleapp/model/post.dart';
 import 'package:upstyleapp/model/user_model.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/chat/chat_page.dart';
@@ -25,7 +26,9 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
   ChatService chatService = ChatService();
   AuthServices authServices = AuthServices();
   PostService postService = PostService();
-  bool isLoading = false;
+  final List<Post> posts = [];
+  bool isLoadingChat = false;
+  bool isLoadingPosts = true;
 
   String otherName = '';
   UserModel? user;
@@ -44,7 +47,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
 
   void createChat() async {
     setState(() {
-      isLoading = true;
+      isLoadingChat = true;
     });
     types.Room room = await chatService.createChat(otherUser!, context);
     // route to chat page
@@ -55,7 +58,34 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
       ),
     );
     setState(() {
-      isLoading = false;
+      isLoadingChat = false;
+    });
+  }
+
+  Future<void> fetchData() async {
+    var allPost = await postService.getUserPosts();
+    String name = '';
+    String avatar = '';
+
+    for (var doc in allPost.docs) {
+      var value = await postService.getUserData(widget.userId);
+      name = value['name'] ?? 'Anonymous';
+      avatar = value['imageUrl'] ?? '';
+      posts.add(
+        Post(
+          id: doc.id,
+          name: name,
+          userAvatar: avatar,
+          postImage: doc['image_url'],
+          caption: doc['text'],
+          time: doc['created_at'].toString(),
+          userId: widget.userId,
+          favorites: doc['favorites'],
+        ),
+      );
+    }
+    setState(() {
+      isLoadingPosts = false;
     });
   }
 
@@ -99,8 +129,9 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
 
   @override
   void initState() {
-    getUser();
     super.initState();
+    getUser();
+    fetchData();
   }
 
   @override
@@ -130,13 +161,13 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                     child: ElevatedButton(
-                      onPressed: !isLoading
+                      onPressed: !isLoadingChat
                           ? () {
                               createChat();
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: !isLoading
+                        backgroundColor: !isLoadingChat
                             ? const Color.fromARGB(255, 238, 99, 56)
                             : Colors.grey,
                         minimumSize: Size(double.infinity, 50.0),
@@ -145,7 +176,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: !isLoading
+                      child: !isLoadingChat
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -199,6 +230,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ),
               ),
             ),
+            /*
             Padding(
               padding: EdgeInsets.only(top: 30.0),
               child: Row(
@@ -210,6 +242,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
+            */
             Padding(
               padding: EdgeInsets.only(top: 30.0),
               child: Row(
@@ -231,20 +264,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: RichText(
-                text: const TextSpan(
-                  text:
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                    fontFamily: "ProductSansMedium",
-                  ),
-                ),
-              ),
-            ),
+            /*
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
@@ -290,6 +310,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ],
               ),
             ),
+            */
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
@@ -301,14 +322,13 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 ),
               ),
             ),
-            FutureBuilder(
-              future: postService.getUserPostsById(widget.userId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+            Builder(
+              builder: (context) {
+                if (isLoadingPosts) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
-                } else if (snapshot.data!.docs.isEmpty) {
+                } else if (posts.isEmpty) {
                   return const Center(
                     child: Text(
                       'No Post',
@@ -321,9 +341,9 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 } else {
                   return Column(
                     children: [
-                      for (var post in snapshot.data!.docs)
+                      for (var post in posts)
                         PostCard(
-                          post: post.data(),
+                          post: post,
                           isClickable: false,
                         ),
                       SizedBox(height: 50.0)

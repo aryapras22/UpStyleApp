@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:upstyleapp/model/post.dart';
 import 'package:uuid/uuid.dart';
 
 class PostService {
@@ -165,15 +164,12 @@ class PostService {
     }
   }
 
-  Future<QuerySnapshot<Post>> getUserPosts() async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserPosts() async {
     try {
       return await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)
           .collection('posts')
-          .withConverter(
-              fromFirestore: Post.fromFirestore,
-              toFirestore: (post, options) => post.toMap())
           .get();
     } catch (e) {
       rethrow;
@@ -181,15 +177,13 @@ class PostService {
   }
 
   // get user posts by id
-  Future<QuerySnapshot<Post>> getUserPostsById(String userId) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUserPostsById(
+      String userId) async {
     try {
       return await _firestore
           .collection('users')
           .doc(userId)
           .collection('posts')
-          .withConverter(
-              fromFirestore: Post.fromFirestore,
-              toFirestore: (post, options) => post.toMap())
           .get();
     } catch (e) {
       rethrow;
@@ -231,8 +225,6 @@ class PostService {
           'favorites': FieldValue.arrayUnion([postId])
         });
         await _firestore
-            .collection('users')
-            .doc(_auth.currentUser!.uid)
             .collection('posts')
             .doc(postId)
             .update({
@@ -269,14 +261,11 @@ class PostService {
     }
   }
 
-  Future<QuerySnapshot<Post>> getFavorites() async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getFavorites() async {
     try {
       return await _firestore
           .collection('posts')
           .where('favorites', arrayContains: _auth.currentUser!.uid)
-          .withConverter(
-              fromFirestore: Post.fromFirestore,
-              toFirestore: (post, options) => post.toMap())
           .get();
     } catch (e) {
       rethrow;
@@ -286,5 +275,20 @@ class PostService {
   // get current user id
   String getCurrentUserId() {
     return _auth.currentUser!.uid;
+  }
+
+  // delete post
+  Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('posts')
+          .doc(postId)
+          .delete();
+    } catch (e) {
+      rethrow;
+    }
   }
 }

@@ -112,157 +112,162 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                 ],
               ),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                    onTap: () async {
-                      final pickedFile = await _picker.pickImage(
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                      onTap: () async {
+                        final pickedFile = await _picker.pickImage(
                           source: ImageSource.gallery,
                           imageQuality: 80,
-                          maxHeight: 400);
-                      setState(() {
-                        if (pickedFile != null) {
-                          _image = File(pickedFile.path);
-                        } else {
-                          SnackBar(
-                            content: Text('No image selected.'),
-                          );
-                        }
-                      });
-                    },
-                    child: _image == null
-                        ? DottedBorder(
-                            borderType: BorderType.RRect,
-                            color: Theme.of(context).colorScheme.primary,
-                            dashPattern: [6, 3],
-                            strokeWidth: 2,
-                            radius: Radius.circular(10),
-                            child: SizedBox(
-                              width: 500,
-                              height: 300,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                        'assets/icons/upload_active.png'),
-                                    Text(
-                                      "Upload your image here",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ],
+                          maxHeight: 600,
+                        );
+                        setState(() {
+                          if (pickedFile != null) {
+                            _image = File(pickedFile.path);
+                          } else {
+                            SnackBar(
+                              content: Text('No image selected.'),
+                            );
+                          }
+                        });
+                      },
+                      child: _image == null
+                          ? DottedBorder(
+                              borderType: BorderType.RRect,
+                              color: Theme.of(context).colorScheme.primary,
+                              dashPattern: [6, 3],
+                              strokeWidth: 2,
+                              radius: Radius.circular(10),
+                              child: SizedBox(
+                                width: 500,
+                                height: 300,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                          'assets/icons/upload_active.png'),
+                                      Text(
+                                        "Upload your image here",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
-                            child: SizedBox(
-                              width: 500,
-                              height: 300,
-                              child: Center(
-                                child: Ink.image(
-                                  image: Image.file(_image!).image,
-                                  fit: BoxFit.cover,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 2,
                                 ),
                               ),
-                            ),
-                          )),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _captionController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: 'Type an image caption...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                        width: 1,
-                        style: BorderStyle.solid,
+                              child: SizedBox(
+                                width: 500,
+                                height: 300,
+                                child: Center(
+                                  child: Ink.image(
+                                    image: Image.file(_image!).image,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            )),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _captionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Type an image caption...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                          style: BorderStyle.solid,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_image == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Please select an image.'),
-                      ));
-                      return;
-                    }
-                    if (_captionController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Please enter a caption.'),
-                      ));
-                      return;
-                    }
-                    // upload post
-                    _uploadPost(context);
-                    Navigator.of(context).pop();
-                    // pop up success message with picture
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                          ),
-                          title: Center(
-                            child: Row(
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_image == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Please select an image.'),
+                        ));
+                        return;
+                      }
+                      if (_captionController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Please enter a caption.'),
+                        ));
+                        return;
+                      }
+                      // upload post
+                      _uploadPost(context);
+                      Navigator.of(context).pop();
+                      // pop up success message with picture
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0)),
+                            ),
+                            title: Center(
+                              child: Row(
+                                children: [
+                                  Text('Upload successful',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge),
+                                  Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      //clear the image and caption
+                                      _image = null;
+                                      _captionController.clear();
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: Icon(Icons.close),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Upload successful',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge),
-                                Spacer(),
-                                IconButton(
-                                  onPressed: () {
-                                    //clear the image and caption
-                                    _image = null;
-                                    _captionController.clear();
-                                    Navigator.of(context).pop();
-                                  },
-                                  icon: Icon(Icons.close),
+                                Image.asset('assets/images/upload_success.png'),
+                                SizedBox(height: 10),
+                                Text(
+                                  'Your image has been uploaded successfully.',
+                                  style: Theme.of(context).textTheme.titleSmall,
                                 ),
                               ],
                             ),
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Image.asset('assets/images/upload_success.png'),
-                              SizedBox(height: 10),
-                              Text(
-                                'Your image has been uploaded successfully.',
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    child: Center(
+                        child: Text('Upload',
+                            style: TextStyle(color: Colors.white))),
                   ),
-                  child: Center(
-                      child: Text('Upload',
-                          style: TextStyle(color: Colors.white))),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         });
@@ -396,7 +401,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                         padding: const EdgeInsets.symmetric(horizontal: 40.0),
                         child: Center(
                           child: Text(
-                            'From drab to fab, #StyleLagi your outfits everyday',
+                            'Let’s go start your upcycling journey with us!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
@@ -412,7 +417,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                           _showUploadDialog(context);
                         },
                         icon: Image.asset('assets/icons/upload.png'),
-                        label: Text('Upload your clothes',
+                        label: Text('Get Your Designer',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w400,
@@ -439,7 +444,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                         focusColor: Colors.white,
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'Search your styles...',
+                        hintText: 'Spot Your Designer',
                         prefixIcon: Icon(
                           Icons.search,
                           color: Theme.of(context).colorScheme.tertiary,

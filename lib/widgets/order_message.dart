@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/orders/order_checkout.dart';
-
+import 'package:upstyleapp/services/order_service.dart';
 
 class OrderMessage extends ConsumerStatefulWidget {
   final String imageUrl;
@@ -25,6 +25,26 @@ class OrderMessage extends ConsumerStatefulWidget {
 }
 
 class _OrderMessageState extends ConsumerState<OrderMessage> {
+  OrderService orderService = OrderService();
+  String status = '';
+  // get order status
+  void getOrderStatus(String orderId) async {
+    try {
+      var data = await orderService.getOrderById(orderId);
+      setState(() {
+        status = data['status'];
+      });
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  void initState() {
+    getOrderStatus(widget.orderId);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final _userData = ref.watch(userProfileProvider);
@@ -82,37 +102,51 @@ class _OrderMessageState extends ConsumerState<OrderMessage> {
           ),
           SizedBox(height: 10.0),
           _userData.role == 'customer'
-              ?
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OrderCheckout(
+              ? status == 'waiting'
+                  ? ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrderCheckout(
                           orderId: widget.orderId,
-                  ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              padding: EdgeInsets.symmetric(horizontal: 55.0, vertical: 5.0),
-            ),
-            child: Text(
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 55.0, vertical: 5.0),
+                      ),
+                      child: Text(
                     'Proceed to Payment',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.white,
-              ),
-            ),
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.white,
+                        ),
+                      ),
                 )
               : Text(
-                  'On Process',
+                      // make the first letter of the status uppercase
+                      status.isNotEmpty
+                          ? status[0].toUpperCase() + status.substring(1)
+                          : 'Pending',
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.grey,
                   ),
-          ),
+                    )
+              : Text(
+                  // make the first letter of the status uppercase
+                  status.isNotEmpty
+                      ? status[0].toUpperCase() + status.substring(1)
+                      : 'Pending',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.grey,
+                  ),
+                )
         ],
       ),
     );
