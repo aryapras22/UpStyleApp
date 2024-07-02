@@ -276,4 +276,19 @@ class PostService {
   String getCurrentUserId() {
     return _auth.currentUser!.uid;
   }
+
+  // delete post
+  Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('posts')
+          .doc(postId)
+          .delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

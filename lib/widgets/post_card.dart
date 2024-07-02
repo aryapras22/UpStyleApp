@@ -90,12 +90,19 @@ class _PostCardState extends State<PostCard>
                   postService.favoritePost(widget.post.id);
                 }
               },
-              child: Stack(alignment: Alignment.center, children: [
-                Image.network(
-                  widget.post.postImage,
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 500,
+                    ),
+                    child: Image.network(
+                      widget.post.postImage,
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                    ),
+                  ),
                 AnimatedBuilder(
                   animation: _animationController,
                   builder: (context, child) {
@@ -109,7 +116,51 @@ class _PostCardState extends State<PostCard>
                     );
                   },
                 ),
-              ]),
+                  if (widget.post.userId == postService.getCurrentUserId() &&
+                      !widget.isClickable)
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          // pop up dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Delete Post'),
+                                content:
+                                    Text('Are you sure you want to delete?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      postService.deletePost(widget.post.id);
+                                      // refresh the page
+                                      Navigator.pop(context);
+                                      // return to the previous page
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
 
             SizedBox(height: 10),
@@ -131,6 +182,7 @@ class _PostCardState extends State<PostCard>
                     children: [
                       CircleAvatar(
                         backgroundImage: NetworkImage(widget.post.userAvatar),
+                        
                         // replace with your avatar URL
                       ),
                       SizedBox(width: 10),
@@ -149,7 +201,10 @@ class _PostCardState extends State<PostCard>
               ],
             ),
             SizedBox(height: 10),
-            // replace with your post image URL
+            Text(
+              widget.post.caption,
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
           ],
         ),
       ),
