@@ -13,6 +13,8 @@ class OrderModel {
   String orderDetail;
   String paymentUrl;
   String paymentToken;
+  String? noResi;
+  String? address;
 
   OrderStatus status;
   DateTime date;
@@ -29,7 +31,7 @@ class OrderModel {
       required this.date,
       required this.paymentUrl,
       required this.paymentToken,
-      this.paymentMethod});
+      this.paymentMethod, this.address, this.noResi});
   String get formattedDate {
     return DateFormat.yMMMMd().format(date);
   }

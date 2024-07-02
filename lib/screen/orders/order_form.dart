@@ -49,7 +49,6 @@ class _OrderFormState extends State<OrderForm> {
     }
     setState(() {
       _showNoImageError = false;
-
       _isLoading = true;
     });
     final order = OrderModel(
@@ -64,6 +63,8 @@ class _OrderFormState extends State<OrderForm> {
       date: DateTime.now(),
       paymentToken: "",
       paymentUrl: "",
+      noResi: "",
+      address: ""
     );
     await _orderService.createOrder(order, widget.room);
     setState(() {

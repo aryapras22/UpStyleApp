@@ -37,6 +37,8 @@ class OrderService {
           'paymentMethod': "",
           'payment_url': order.paymentUrl,
           'payment_token': order.paymentToken,
+          "resi": order.noResi,
+          "address": order.address,
         },
       );
       chatService.sendOrderMessage(
@@ -69,6 +71,28 @@ class OrderService {
           .collection('orders')
           .doc(id)
           .update({'status': status.name});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateResi(String id, String noResi) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(id)
+          .update({'resi': noResi});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateAddress(String id, String address) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(id)
+          .update({'address': address});
     } catch (e) {
       rethrow;
     }

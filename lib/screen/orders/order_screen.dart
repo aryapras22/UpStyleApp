@@ -167,19 +167,20 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               .map(
                                 (order) => OrderCard(
                                   order: OrderModel(
-                                    orderId: order.id,
-                                    designerId: order['designerId'],
-                                    customerId: order['custId'],
-                                    imageUrl: order['image_url'],
-                                    price: order['price'],
-                                    title: order['title'],
-                                    orderDetail: order['orderDetail'],
-                                    status:
-                                        getStatusFromString(order['status']),
-                                    date: DateTime.parse(order['date']),
-                                    paymentToken: order['payment_url'],
-                                    paymentUrl: order['payment_token'],
-                                  ),
+                                      orderId: order.id,
+                                      designerId: order['designerId'],
+                                      customerId: order['custId'],
+                                      imageUrl: order['image_url'],
+                                      price: order['price'],
+                                      title: order['title'],
+                                      orderDetail: order['orderDetail'],
+                                      status:
+                                          getStatusFromString(order['status']),
+                                      date: DateTime.parse(order['date']),
+                                      paymentToken: order['payment_url'],
+                                      paymentUrl: order['payment_token'],
+                                      noResi: order['resi'],
+                                      address: order['address']),
                                 ),
                               )
                               .toList(),

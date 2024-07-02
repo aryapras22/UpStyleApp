@@ -20,6 +20,8 @@ class _OrderCardState extends ConsumerState<OrderCard> {
   final _orderService = OrderService();
 
   void _showChangeStatusAlert(context, label, OrderStatus status) {
+    final formkey = GlobalKey<FormState>();
+    var resiController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -30,9 +32,53 @@ class _OrderCardState extends ConsumerState<OrderCard> {
               .titleLarge!
               .copyWith(color: Colors.black),
         ),
-        content: Text(
-          'You cannot undo this decision',
-          style: Theme.of(context).textTheme.bodyMedium,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'You cannot undo this decision',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Form(
+              key: formkey,
+              child: TextFormField(
+                controller: resiController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter resi number!';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.fire_truck,
+                    color: Color.fromARGB(255, 150, 150, 150),
+                  ),
+                  hintText: 'Resi No.',
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(255, 150, 150, 150),
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'Subtitle',
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 238, 99, 56),
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 150, 150, 150),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -56,6 +102,13 @@ class _OrderCardState extends ConsumerState<OrderCard> {
                 padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
               ),
               onPressed: () async {
+                if (status == OrderStatus.delivered) {
+                  if (!formkey.currentState!.validate()) {
+                    return;
+                  }
+                  await _orderService.updateResi(
+                      widget.order.orderId, resiController.text);
+                }
                 await _orderService.changeStatus(widget.order.orderId, status);
                 widget.order.status = status;
                 Navigator.pop(context);
