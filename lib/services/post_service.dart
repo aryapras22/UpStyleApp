@@ -195,7 +195,7 @@ class PostService {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('posts')
-          .where('text', isGreaterThan: genre)
+          .where('text', isGreaterThanOrEqualTo: genre)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         return querySnapshot.docs;
