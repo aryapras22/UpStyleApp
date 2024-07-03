@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-enum OrderStatus {unPaid, waiting, inProgress, completed, canceled }
+enum OrderStatus { waiting, onProgress, delivered, completed, canceled }
 
 class OrderModel {
   String orderId;
@@ -11,13 +11,17 @@ class OrderModel {
   String title;
   String price;
   String orderDetail;
+  String paymentUrl;
+  String paymentToken;
+  String? noResi;
+  String? address;
+
   OrderStatus status;
   DateTime date;
   String? paymentMethod;
   OrderModel(
-      {
-        required this.orderId,
-        required this.designerId,
+      {required this.orderId,
+      required this.designerId,
       required this.customerId,
       required this.imageUrl,
       required this.price,
@@ -25,7 +29,9 @@ class OrderModel {
       required this.orderDetail,
       required this.status,
       required this.date,
-      this.paymentMethod});
+      required this.paymentUrl,
+      required this.paymentToken,
+      this.paymentMethod, this.address, this.noResi});
   String get formattedDate {
     return DateFormat.yMMMMd().format(date);
   }
@@ -34,8 +40,10 @@ class OrderModel {
     switch (status) {
       case OrderStatus.waiting:
         return 'Waiting';
-      case OrderStatus.inProgress:
-        return 'In Progress';
+      case OrderStatus.onProgress:
+        return 'On Progress';
+      case OrderStatus.delivered:
+        return 'Delivered';
       case OrderStatus.completed:
         return 'Completed';
       case OrderStatus.canceled:
@@ -49,8 +57,10 @@ class OrderModel {
     switch (status) {
       case OrderStatus.waiting:
         return const Color.fromARGB(255, 250, 225, 0);
-      case OrderStatus.inProgress:
+      case OrderStatus.onProgress:
         return const Color.fromARGB(255, 0, 153, 255);
+      case OrderStatus.delivered:
+        return Color.fromARGB(255, 0, 247, 255);
       case OrderStatus.completed:
         return const Color.fromARGB(255, 41, 204, 106);
       case OrderStatus.canceled:

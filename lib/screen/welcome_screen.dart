@@ -57,21 +57,11 @@ class WelcomeScreen extends StatelessWidget {
                           fontFamily: 'ProductSansMedium',
                         ),
                         children: [
-                          TextSpan(text: 'Find the '),
                           TextSpan(
-                            text: 'designer',
-                            style: TextStyle(
-                              color: Color.fromARGB(
-                                255,
-                                238,
-                                99,
-                                56,
-                              ), // Color for 'designer'
-                              fontFamily:
-                                  'ProductSansMedium', // Font for 'designer
-                            ),
-                          ),
-                          TextSpan(text: ' that \n fits your vision'),
+                              text: 'StyleLagi',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 238, 99, 56))),
+                          TextSpan(text: ' Here'),
                         ],
                       ),
                     ),
@@ -87,7 +77,7 @@ class WelcomeScreen extends StatelessWidget {
                           fontWeight: FontWeight.normal,
                           fontFamily: 'Subtitle',
                         ),
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                        "From drab to fab, #StyleLagi your everyday outfit!",
                       ),
                     ),
                     const SizedBox(height: 16),

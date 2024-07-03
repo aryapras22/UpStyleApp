@@ -1,1 +1,37 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"upstyleapp-c0154","appId":"1:1098215056967:android:9d22cebce5fdee4444f362","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"upstyleapp-c0154","configurations":{"android":"1:1098215056967:android:9d22cebce5fdee4444f362"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "upstyleapp-c0154",
+          "appId": "1:1098215056967:android:9d22cebce5fdee4444f362",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "upstyleapp-c0154",
+          "configurations": {
+            "android": "1:1098215056967:android:9d22cebce5fdee4444f362"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}

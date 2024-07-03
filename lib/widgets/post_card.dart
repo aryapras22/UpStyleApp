@@ -8,9 +8,9 @@ import 'package:upstyleapp/services/post_service.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  final bool isHome;
+  final bool isClickable;
 
-  PostCard({required this.post, required this.isHome});
+  PostCard({required this.post, required this.isClickable});
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -64,7 +64,6 @@ class _PostCardState extends State<PostCard>
   @override
   Widget build(BuildContext context) {
     isFavorite = widget.post.favorites.contains(postService.getCurrentUserId());
-    print(isFavorite);
     return Card(
       color: Colors.white,
       shadowColor: Theme.of(context).shadowColor,
@@ -81,7 +80,6 @@ class _PostCardState extends State<PostCard>
                   setState(() {
                     isFavorite = false;
                   });
-                  // remove from favorites lists
                   widget.post.favorites.remove(postService.getCurrentUserId());
                   postService.unfavoritePost(widget.post.id);
                 } else if (!isFavorite) {
@@ -92,12 +90,19 @@ class _PostCardState extends State<PostCard>
                   postService.favoritePost(widget.post.id);
                 }
               },
-              child: Stack(alignment: Alignment.center, children: [
-                Image.network(
-                  widget.post.postImage,
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 500,
+                    ),
+                    child: Image.network(
+                      widget.post.postImage,
+                      fit: BoxFit.fill,
+                      width: double.infinity,
+                    ),
+                  ),
                 AnimatedBuilder(
                   animation: _animationController,
                   builder: (context, child) {
@@ -111,71 +116,95 @@ class _PostCardState extends State<PostCard>
                     );
                   },
                 ),
-              ]),
+                  if (widget.post.userId == postService.getCurrentUserId() &&
+                      !widget.isClickable)
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          // pop up dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Delete Post'),
+                                content:
+                                    Text('Are you sure you want to delete?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      postService.deletePost(widget.post.id);
+                                      // refresh the page
+                                      Navigator.pop(context);
+                                      // return to the previous page
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
             ),
 
             SizedBox(height: 10),
-            widget.isHome
-                ? Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileDetail(userId: widget.post.userId),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage:
-                                  AssetImage(widget.post.userAvatar),
-                              // replace with your avatar URL
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              widget.post.name,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (widget.isClickable) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileDetail(userId: widget.post.userId),
                         ),
-                      ),
-                      Spacer(),
-                      Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
-                      ),
-                    ],
-                  )
-                : Container(),
-            SizedBox(height: 10),
-            widget.isHome
-                ? Text(
-                    widget.post.caption,
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                    ),
-                  )
-                : Row(
+                      );
+                    }
+                  },
+                  child: Row(
                     children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(widget.post.userAvatar),
+                        
+                        // replace with your avatar URL
+                      ),
+                      SizedBox(width: 10),
                       Text(
-                        widget.post.caption,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      Spacer(),
-                      Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
+                        widget.post.name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
+                ),
+                Spacer(),
+                Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.grey,
+                ),
+              ],
+            ),
             SizedBox(height: 10),
-            // replace with your post image URL
+            Text(
+              widget.post.caption,
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
           ],
         ),
       ),

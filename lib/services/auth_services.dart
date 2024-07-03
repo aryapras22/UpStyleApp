@@ -1,48 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:upstyleapp/screen/auth_screen.dart';
 
 class AuthServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<void> sendEmailVerificationLink() async {
+    try {
+      await _firebaseAuth.currentUser?.sendEmailVerification();
+    } catch (e) {
+      print('Error sending email verification link: $e');
+      rethrow;
+    }
+  }
+
   // Register user
   Future<void> register({
     required String email,
     required String password,
     required String name,
-    required String role,
-    String? phone,
-    String? address,
-    String? imageUrl,
   }) async {
     try {
-      UserCredential userCredential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
+      await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      User? user = userCredential.user;
-      if (user != null && !user.emailVerified) {
-        await user.sendEmailVerification();
-      }
-      if (user!.emailVerified) {
-        await _firestore.collection('users').doc(user.uid).set({
-          'email': email,
-          'name': name,
-          'role': role,
-          'phone': phone ?? '',
-          'address': address ?? '',
-          'imageUrl': imageUrl ?? '',
-        });
-      }
     } on FirebaseAuthException catch (e) {
       print('Error registering user: ${e.message}');
       rethrow;
     } catch (e) {
       print('Error registering user: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> addUserToFirestore({
+    required String uid,
+    required String email,
+    required String name,
+    required String role,
+  }) async {
+    try {
+      await _firestore.collection('users').doc(uid).set({
+        'email': email,
+        'name': name,
+        'role': role, // Example role
+        'phone': '',
+        'address': '',
+        'imageUrl': '',
+      });
+    } catch (e) {
+      print('Error adding user to Firestore: $e');
       rethrow;
     }
   }
@@ -67,15 +77,6 @@ class AuthServices {
   }
 
   // Logout user
-  Future<void> logout() async {
-    try {
-      await _firebaseAuth.signOut();
-      await GoogleSignIn().signOut();
-    } catch (e) {
-      print('Error logging out: $e');
-      rethrow;
-    }
-  }
 
   Future<void> logoutWithContext(BuildContext context) async {
     try {

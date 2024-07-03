@@ -18,7 +18,7 @@ class OrderService {
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('order_images')
-          .child("$order.orderId.jpg");
+          .child("${order.orderId}.jpg");
       await storageRef.putFile(File(order.imageUrl));
       final imageUrl = await storageRef.getDownloadURL();
       await FirebaseFirestore.instance
@@ -34,7 +34,11 @@ class OrderService {
           'image_url': imageUrl,
           'date': order.date.toString(),
           'status': order.status.name,
-          'paymentMethod': ""
+          'paymentMethod': "",
+          'payment_url': order.paymentUrl,
+          'payment_token': order.paymentToken,
+          "resi": order.noResi,
+          "address": order.address,
         },
       );
       chatService.sendOrderMessage(
@@ -72,11 +76,49 @@ class OrderService {
     }
   }
 
+  Future<void> updateResi(String id, String noResi) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(id)
+          .update({'resi': noResi});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> updateAddress(String id, String address) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(id)
+          .update({'address': address});
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<QueryDocumentSnapshot>> getAllCustOrder(String userId) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('orders')
           .where('custId', isEqualTo: userId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<QueryDocumentSnapshot>> getAllDesOrder(String userId) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('orders')
+          .where('designerId', isEqualTo: userId)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         return querySnapshot.docs.toList();
@@ -102,6 +144,36 @@ class OrderService {
         return [];
       }
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<QueryDocumentSnapshot>> getFilteredDesOrder(
+      String userId, String status) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('orders')
+          .where('designerId', isEqualTo: userId)
+          .where('status', isEqualTo: status)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get order status by id
+  Future<String> getOrderStatus(String id) async {
+    try {
+      var queryDocumentSnapshot =
+          await FirebaseFirestore.instance.collection('orders').doc(id).get();
+      var data = queryDocumentSnapshot.data() ?? {};
+      return data['status'];
+    } catch (error) {
       rethrow;
     }
   }

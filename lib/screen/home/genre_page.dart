@@ -16,22 +16,25 @@ class _GenrePageState extends State<GenrePage> {
   bool isLoading = true;
   final _postService = PostService();
   List<Post> posts = [];
+  List<Post> searchPosts = [];
+
+  String name = '';
+  String avatar = '';
 
   void fetchPosts() async {
-    var allPost = await _postService.searchByGenre(widget.genre);
-    if (allPost.isEmpty) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-    String name = '';
-    String avatar = '';
+    setState(() {
+      posts.clear();
+    });
+    final allPost =
+        await _postService.searchByGenre(widget.genre.toLowerCase());
+    setState(() {
+      isLoading = false;
+    });
 
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
-      name = value['name'];
-      avatar = value['imageUrl'];
+      name = value['name'] ?? 'Anonymous';
+      avatar = value['imageUrl'] ?? '';
       posts.add(
         Post(
           id: doc.id,
@@ -41,6 +44,7 @@ class _GenrePageState extends State<GenrePage> {
           caption: doc['text'],
           time: doc['created_at'].toString(),
           userId: doc['user_id'],
+          favorites: doc['favorites'],
         ),
       );
     }
@@ -51,10 +55,8 @@ class _GenrePageState extends State<GenrePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
-    super.initState();
     fetchPosts();
+    super.initState();
   }
 
   @override
@@ -80,7 +82,7 @@ class _GenrePageState extends State<GenrePage> {
                     children: [
                       for (var post in posts)
                         PostCard(
-                          isHome: true,
+                          isClickable: true,
                           post: post,
                         ),
                     ],

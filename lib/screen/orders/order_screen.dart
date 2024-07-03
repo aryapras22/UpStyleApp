@@ -1,19 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/model/order.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/orders/order_card.dart';
 import 'package:upstyleapp/screen/orders/order_tab_item.dart';
 import 'package:upstyleapp/services/order_service.dart';
 
-class OrderScreen extends StatefulWidget {
+class OrderScreen extends ConsumerStatefulWidget {
   const OrderScreen({super.key});
 
   @override
-  State<OrderScreen> createState() => _OrderScreenState();
+  ConsumerState<OrderScreen> createState() => _OrderScreenState();
 }
 
-class _OrderScreenState extends State<OrderScreen> {
+class _OrderScreenState extends ConsumerState<OrderScreen> {
   List<QueryDocumentSnapshot> _listOrder = [];
 
   bool _isLoading = true;
@@ -27,8 +29,14 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   void fetchAllData() async {
-    _listOrder = await _orderService
-        .getAllCustOrder(FirebaseAuth.instance.currentUser!.uid);
+    final userData = ref.read(userProfileProvider);
+    if (userData.role == 'designer') {
+      _listOrder = await _orderService
+          .getAllDesOrder(FirebaseAuth.instance.currentUser!.uid);
+    } else {
+      _listOrder = await _orderService
+          .getAllCustOrder(FirebaseAuth.instance.currentUser!.uid);
+    }
     _listOrder.sort((b, a) => (a['date']).compareTo(b['date']));
     setState(() {
       _isLoading = false;
@@ -36,11 +44,18 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   void filterOrders(OrderStatus status) async {
+    final userData = ref.read(userProfileProvider);
     setState(() {
       _isLoading = true;
     });
-    _listOrder = await _orderService.getFilteredCustOrder(
-        FirebaseAuth.instance.currentUser!.uid, status.name);
+    if (userData.role == 'designer') {
+      _listOrder = await _orderService.getFilteredDesOrder(
+          FirebaseAuth.instance.currentUser!.uid, status.name);
+    } else {
+      _listOrder = await _orderService.getFilteredCustOrder(
+          FirebaseAuth.instance.currentUser!.uid, status.name);
+    }
+
     _listOrder.sort((b, a) => (a['date']).compareTo(b['date']));
     setState(() {
       _isLoading = false;
@@ -50,7 +65,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 5,
+      length: 6,
       child: Column(
         children: [
           SizedBox(
@@ -97,10 +112,12 @@ class _OrderScreenState extends State<OrderScreen> {
                           case 1:
                             return filterOrders(OrderStatus.waiting);
                           case 2:
-                            return filterOrders(OrderStatus.inProgress);
+                            return filterOrders(OrderStatus.onProgress);
                           case 3:
-                            return filterOrders(OrderStatus.completed);
+                            return filterOrders(OrderStatus.delivered);
                           case 4:
+                            return filterOrders(OrderStatus.completed);
+                          case 5:
                             return filterOrders(OrderStatus.canceled);
                           default:
                             return fetchAllData();
@@ -114,7 +131,10 @@ class _OrderScreenState extends State<OrderScreen> {
                           title: 'Waiting',
                         ),
                         OrderTabItem(
-                          title: 'In Progress',
+                          title: 'On Progress',
+                        ),
+                        OrderTabItem(
+                          title: 'Delivered',
                         ),
                         OrderTabItem(
                           title: 'Completed',
@@ -156,7 +176,11 @@ class _OrderScreenState extends State<OrderScreen> {
                                       orderDetail: order['orderDetail'],
                                       status:
                                           getStatusFromString(order['status']),
-                                      date: DateTime.parse(order['date'])),
+                                      date: DateTime.parse(order['date']),
+                                      paymentToken: order['payment_url'],
+                                      paymentUrl: order['payment_token'],
+                                      noResi: order['resi'],
+                                      address: order['address']),
                                 ),
                               )
                               .toList(),
