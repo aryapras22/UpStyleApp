@@ -17,20 +17,19 @@ class _GenrePageState extends State<GenrePage> {
   final _postService = PostService();
   List<Post> posts = [];
   List<Post> searchPosts = [];
-  
+
+  String name = '';
+  String avatar = '';
+
   void fetchPosts() async {
     setState(() {
       posts.clear();
     });
-    var allPost = await _postService.searchPosts(widget.genre.toLowerCase());
-    if (allPost.isEmpty) {
-      setState(() {
-        isLoading = false;
-      });
-      return;
-    }
-    String name = '';
-    String avatar = '';
+    final allPost =
+        await _postService.searchByGenre(widget.genre.toLowerCase());
+    setState(() {
+      isLoading = false;
+    });
 
     for (var doc in allPost) {
       var value = await _postService.getUserData(doc['user_id']);
@@ -49,8 +48,6 @@ class _GenrePageState extends State<GenrePage> {
         ),
       );
     }
-
-
     setState(() {
       isLoading = false;
     });
