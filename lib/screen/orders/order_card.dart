@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:upstyleapp/model/order.dart';
 import 'package:upstyleapp/providers/auth_providers.dart';
@@ -18,6 +19,7 @@ class OrderCard extends ConsumerStatefulWidget {
 
 class _OrderCardState extends ConsumerState<OrderCard> {
   final _orderService = OrderService();
+  final chatService = ChatService();
 
   void _showChangeStatusAlert(context, label, OrderStatus status) {
     final formkey = GlobalKey<FormState>();
@@ -295,6 +297,7 @@ class _OrderCardState extends ConsumerState<OrderCard> {
                                     widget.order.status !=
                                         OrderStatus.onProgress) {
                                   // chat customer
+                                  showChatPageCustomer(context);
                                 } else if (!_designer &&
                                     widget.order.status ==
                                         OrderStatus.delivered) {
@@ -364,14 +367,19 @@ class _OrderCardState extends ConsumerState<OrderCard> {
                                                   color: Colors.white,
                                                   fontSize: 12),
                                         )
-                                      : Text(
-                                          'Chat Designer',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 12),
+                                      : GestureDetector(
+                                          onTap: () {
+                                            showChatPageDesigner(context);
+                                          },
+                                          child: Text(
+                                            'Chat Designer',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .copyWith(
+                                                    color: Colors.white,
+                                                    fontSize: 12),
+                                          ),
                                         ),
                             ),
                     ],
@@ -381,6 +389,29 @@ class _OrderCardState extends ConsumerState<OrderCard> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void showChatPageDesigner(context) async {
+    types.User otherUser = types.User(id: widget.order.designerId);
+    types.Room room = await chatService.createChat(otherUser, context);
+    // route to chat page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(room: room),
+      ),
+    );
+  }
+  void showChatPageCustomer(context) async {
+    types.User otherUser = types.User(id: widget.order.customerId);
+    types.Room room = await chatService.createChat(otherUser, context);
+    // route to chat page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(room: room),
       ),
     );
   }
