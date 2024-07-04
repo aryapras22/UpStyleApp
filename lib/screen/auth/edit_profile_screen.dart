@@ -56,6 +56,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               email: currentUser.email ?? '',
               phone: _phone,
               imageUrl: imageUrl,
+              address: _address,
               role: ref.read(userProfileProvider).role, // Use existing role
             );
       }
