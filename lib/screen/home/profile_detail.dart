@@ -63,7 +63,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
   }
 
   Future<void> fetchData() async {
-    var allPost = await postService.getUserPosts();
+    var allPost = await postService.getUserPostsById(widget.userId);
     String name = '';
     String avatar = '';
 
