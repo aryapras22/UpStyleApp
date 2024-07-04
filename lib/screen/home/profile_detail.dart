@@ -140,7 +140,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text('Profile Designer'),
+        title: Text('Profile'),
         centerTitle: true,
       ),
       bottomSheet: user!.role != otherRole
@@ -314,7 +314,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: Text(
-                "Portofolio",
+                "Posts",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 18.0,
