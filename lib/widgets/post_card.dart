@@ -181,7 +181,9 @@ class _PostCardState extends State<PostCard>
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(widget.post.userAvatar),
+                        backgroundImage: widget.post.userAvatar.isNotEmpty
+                            ? NetworkImage(widget.post.userAvatar)
+                            : AssetImage('assets/images/post_avatar.png'),
                         
                         // replace with your avatar URL
                       ),

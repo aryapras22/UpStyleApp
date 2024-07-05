@@ -34,6 +34,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
   UserModel? user;
   types.User? otherUser;
   String otherRole = '';
+  String otherAvatar = '';
 
   void getUser() async {
     await postService.getUserData(widget.userId).then((value) {
@@ -41,6 +42,7 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
         otherName = value['name'];
         otherUser = types.User(id: widget.userId, firstName: otherName);
         otherRole = value['role'];
+        otherAvatar = value['imageUrl'];
       });
     });
   }
@@ -253,7 +255,9 @@ class _ProfileDetailState extends ConsumerState<ProfileDetail> {
                 children: [
                   CircleAvatar(
                     backgroundImage:
-                        AssetImage('assets/images/post_avatar.png'),
+                    otherAvatar.isNotEmpty
+                        ? NetworkImage(otherAvatar)
+                        : AssetImage('assets/images/post_avatar.png'),
                     // replace with your avatar URL
                   ),
                   SizedBox(width: 10),
