@@ -5,21 +5,25 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:upstyleapp/model/post.dart';
+import 'package:upstyleapp/model/user_model.dart';
+import 'package:upstyleapp/providers/auth_providers.dart';
 import 'package:upstyleapp/screen/home/browse_page.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
 
-class Home extends StatefulWidget {
+class Home extends ConsumerStatefulWidget {
   const Home({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  ConsumerState<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
+class _HomeState extends ConsumerState<Home>
+    implements TickerProviderStateMixin<Home> {
   final TextEditingController _captionController = TextEditingController();
   @override
   Ticker createTicker(TickerCallback onTick) {
@@ -46,7 +50,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
     _filterController.dispose();
     _refreshController.dispose();
     _searchController.dispose();
-    
+
     super.dispose();
   }
 
@@ -61,6 +65,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   final SearchController _searchController = SearchController();
+  UserModel? user;
 
   void search(query) async {
     if (query.isNotEmpty) {
@@ -90,6 +95,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
   }
 
   void _showUploadDialog(BuildContext context) {
+    user = ref.watch(userProfileProvider);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -320,6 +326,8 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
         ),
       );
     }
+
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });
@@ -327,6 +335,7 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
 
   // closure fix
   void _fetchDataClosure(int index) async {
+    if (!mounted) return;
     setState(() {
       isLoading = true;
       posts.clear();
@@ -418,7 +427,10 @@ class _HomeState extends State<Home> implements TickerProviderStateMixin<Home> {
                           _showUploadDialog(context);
                         },
                         icon: Image.asset('assets/icons/upload.png'),
-                        label: Text('Get Your Designer',
+                        label: Text(
+                            userRole == 'customer'
+                                ? 'Get Your Designer'
+                                : 'Upload Your Portfolio',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w400,

@@ -42,10 +42,12 @@ class _ChatRoomTileState extends State<ChatRoomTile> {
     }
 
     DateTime time = DateTime.fromMillisecondsSinceEpoch(widget.room.updatedAt!);
+    if (!mounted) return;
     await chatService.getLatestChat(widget.room).then(
+      
       (value) {
+        
         setState(() {
-          
           latestChat = value;
           // if time is more than 12 hours, show date
           if (DateTime.now().difference(time).inHours > 12) {
