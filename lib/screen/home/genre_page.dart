@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:upstyleapp/model/post.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
+import 'package:upstyleapp/services/algolia_search.dart' as algolia;
 
 class GenrePage extends StatefulWidget {
   final String genre;
@@ -17,37 +19,10 @@ class _GenrePageState extends State<GenrePage> {
   final _postService = PostService();
   List<Post> posts = [];
   List<Post> searchPosts = [];
-
   String name = '';
   String avatar = '';
 
   void fetchPosts() async {
-    setState(() {
-      posts.clear();
-    });
-    final allPost =
-        await _postService.searchByGenre(widget.genre.toLowerCase());
-    setState(() {
-      isLoading = false;
-    });
-
-    for (var doc in allPost) {
-      var value = await _postService.getUserData(doc['user_id']);
-      name = value['name'] ?? 'Anonymous';
-      avatar = value['imageUrl'] ?? '';
-      posts.add(
-        Post(
-          id: doc.id,
-          name: name,
-          userAvatar: avatar,
-          postImage: doc['image_url'],
-          caption: doc['text'],
-          time: doc['created_at'].toString(),
-          userId: doc['user_id'],
-          favorites: doc['favorites'],
-        ),
-      );
-    }
     setState(() {
       isLoading = false;
     });
@@ -55,39 +30,67 @@ class _GenrePageState extends State<GenrePage> {
 
   @override
   void initState() {
-    fetchPosts();
     super.initState();
+    algolia.postsSearcher.query(widget.genre);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text('Genre'),
+        title: Text('Genre: ${widget.genre}'),
       ),
       body: ListView(
         children: [
-          isLoading
-              ? Container(
-                  alignment: Alignment.center,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      for (var post in posts)
-                        PostCard(
-                          isClickable: true,
+          StreamBuilder<SearchResponse>(
+              stream: algolia.postsSearcher.responses,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final posts = snapshot.data!.hits;
+                  if (posts.isEmpty) {
+                    return Container(
+                      alignment: Alignment.center,
+                      child: Center(
+                        child: Text('No posts found'),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      var value =
+                          _postService.getUserData(posts[index]['user_id']);
+                      value.then((value) {
+                        name = value['name'];
+                        avatar = value['avatar'];
+                      });
+                      final post = Post(
+                        id: posts[index]['objectID'],
+                        caption: posts[index]['text'],
+                        postImage: posts[index]['image_url'],
+                        time: posts[index]['created_at'].toString(),
+                        favorites: posts[index]['favorites'],
+                        userAvatar: avatar,
+                        name: name,
+                        userId: posts[index]['user_id'],
+                      );
+
+                      return Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: PostCard(
                           post: post,
+                          isClickable: true,
                         ),
-                    ],
-                  ),
-                ),
+                      );
+                    },
+                  );
+                }
+                return Container();
+              }),
         ],
       ),
     );
