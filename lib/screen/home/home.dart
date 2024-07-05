@@ -428,7 +428,7 @@ class _HomeState extends ConsumerState<Home>
                         },
                         icon: Image.asset('assets/icons/upload.png'),
                         label: Text(
-                            user?.role == 'customer'
+                            userRole == 'customer'
                                 ? 'Get Your Designer'
                                 : 'Upload Your Portfolio',
                             style: TextStyle(
