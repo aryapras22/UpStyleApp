@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:upstyleapp/model/post.dart';
 import 'package:upstyleapp/services/post_service.dart';
 import 'package:upstyleapp/widgets/post_card.dart';
+import 'package:upstyleapp/services/algolia_search.dart' as algolia;
 
 class GenrePage extends StatefulWidget {
   final String genre;
@@ -17,6 +18,13 @@ class _GenrePageState extends State<GenrePage> {
   final _postService = PostService();
   List<Post> posts = [];
   List<Post> searchPosts = [];
+
+  // get algolia search
+  void getAllData() {
+    algolia.postsSearcher.query(widget.genre);
+    algolia.postsSearcher.responses;
+    print(algolia.postsSearcher.responses);
+  }
 
   String name = '';
   String avatar = '';
@@ -55,8 +63,8 @@ class _GenrePageState extends State<GenrePage> {
 
   @override
   void initState() {
-    fetchPosts();
     super.initState();
+    getAllData();
   }
 
   @override

@@ -58,6 +58,9 @@ dependencies:
   http: ^1.2.1
   webview_flutter: ^3.0.4
 
+  algolia_helper_flutter: ^1.0.0
+  infinite_scroll_pagination: ^3.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
