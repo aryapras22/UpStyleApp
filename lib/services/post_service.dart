@@ -208,15 +208,9 @@ class PostService {
   }
 
   // users collection favorites posts
-  Future<void> favoritePost(String postId) async {
+  Future<void> favoritePost(String postId, String otherUserId) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .collection('favorites')
-          .where('post_id', isEqualTo: postId)
-          .get();
-      if (querySnapshot.docs.isEmpty) {
+
         await _firestore
             .collection('users')
             .doc(_auth.currentUser!.uid)
@@ -226,32 +220,39 @@ class PostService {
         await _firestore.collection('posts').doc(postId).update({
           'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
         });
-        await _firestore.collection('posts').doc(postId).update({
+      await _firestore
+          .collection('users')
+          .doc(otherUserId)
+          .collection('posts')
+          .doc(postId)
+          .update({
           'favorites': FieldValue.arrayUnion([_auth.currentUser!.uid])
         });
-      }
+      
     } on Exception catch (e) {
       throw e;
     }
   }
 
   // users collection unfavorites posts
-  Future<void> unfavoritePost(String postId) async {
+  Future<void> unfavoritePost(String postId, String otherUserId) async {
     try {
+
       await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
         'favorites': FieldValue.arrayRemove([postId])
       });
+      await _firestore.collection('posts').doc(postId).update({
+        'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
+      });
       await _firestore
           .collection('users')
-          .doc(_auth.currentUser!.uid)
+          .doc(otherUserId)
           .collection('posts')
           .doc(postId)
           .update({
         'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
       });
-      await _firestore.collection('posts').doc(postId).update({
-        'favorites': FieldValue.arrayRemove([_auth.currentUser!.uid])
-      });
+      
     } on Exception catch (e) {
       throw e;
     }

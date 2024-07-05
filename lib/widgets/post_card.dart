@@ -81,13 +81,14 @@ class _PostCardState extends State<PostCard>
                     isFavorite = false;
                   });
                   widget.post.favorites.remove(postService.getCurrentUserId());
-                  postService.unfavoritePost(widget.post.id);
+                  postService.unfavoritePost(
+                      widget.post.id, widget.post.userId);
                 } else if (!isFavorite) {
                   setState(() {
                     isFavorite = true;
                   });
                   widget.post.favorites.add(postService.getCurrentUserId());
-                  postService.favoritePost(widget.post.id);
+                  postService.favoritePost(widget.post.id, widget.post.userId);
                 }
               },
               child: Stack(
