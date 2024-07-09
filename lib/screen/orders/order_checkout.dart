@@ -351,38 +351,35 @@ class _OrderCheckoutState extends ConsumerState<OrderCheckout> {
                                     _checkoutLoading = true;
                                   });
 
-                                  var url =
-                                      'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
-                                  var body = {
-                                    'orderId': _order.orderId,
-                                    'amount': (int.parse(_order.price) + tax)
-                                        .toString(),
-                                    'name': user.name,
-                                    'phone': user.phone ?? "",
-                                    'email': user.email,
-                                  };
-                                  if (_order.paymentUrl.trim() != "" &&
-                                      _order.paymentToken.trim() != "") {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => SnapWebViewScreen(
-                                          url: _order.paymentUrl,
-                                        ),
+                                  // var url =
+                                  //     'https://us-central1-upstyleapp-c0154.cloudfunctions.net/midtransPaymentRequest';
+                                  // var body = {
+                                  //   'orderId': _order.orderId,
+                                  //   'amount': (int.parse(_order.price) + tax)
+                                  //       .toString(),
+                                  //   'name': user.name,
+                                  //   'phone': user.phone ?? "",
+                                  //   'email': user.email,
+                                  // };
+                                  // if (_order.paymentUrl.trim() != "" &&
+                                  //     _order.paymentToken.trim() != "") {
+                                  //   Navigator.of(context).push(
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => SnapWebViewScreen(
+                                  //         url: _order.paymentUrl,
+                                  //       ),
+                                  //     ),
+                                  //   );
+                                  // } else {
+                                  // var response = await http
+                                  //     .post(Uri.parse(url), body: body);
+                                  // var transaction = jsonDecode(response.body);
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => OrderPayment(
+                                      order: _order,
                                       ),
-                                    );
-                                  } else {
-                                    var response = await http
-                                        .post(Uri.parse(url), body: body);
-                                    var transaction = jsonDecode(response.body);
-                                    print(transaction);
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => SnapWebViewScreen(
-                                          url: transaction['redirectUrl'],
-                                        ),
-                                      ),
-                                    );
-                                  }
+                                  ));
+                                  // }
                                   setState(() {
                                     _checkoutLoading = false;
                                   });
