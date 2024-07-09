@@ -4,6 +4,7 @@ import 'package:upstyleapp/model/order.dart';
 import 'package:upstyleapp/screen/dashboard_screen.dart';
 import 'package:upstyleapp/screen/orders/order_screen.dart';
 import 'package:upstyleapp/services/order_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderPayment extends StatefulWidget {
   const OrderPayment({super.key, required this.order});
@@ -107,6 +108,26 @@ class _OrderPaymentState extends State<OrderPayment> {
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      final Uri url = Uri.parse(
+                          'https://wa.me/6285259082955?text=Halo%20saya%20sudah%20membayar%20pesanan%20dengan%20ID%20 ${widget.order.orderId}');
+                      await Clipboard.setData(
+                          ClipboardData(text: url.toString()));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('URL copied to clipboard'),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Kirim bukti bayar ke WhatsApp',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: Colors.blue),
+                    ),
                   ),
                 ],
               ),
