@@ -103,7 +103,7 @@ class _OrderPaymentState extends State<OrderPayment> {
                     ],
                   ),
                   Text(
-                    'Total: Rp. ${(int.parse(widget.order.price) * 1.01).toInt()}',
+                    'Total: Rp. ${(int.parse(widget.order.price) * 1.015).toInt()}',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
